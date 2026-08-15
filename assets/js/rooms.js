@@ -11,8 +11,8 @@
  */
 
 const ROOMS = [
-  { id: 'dabang-1979',    year: '1979', name: '다방',     blurb: 'DJ 박스와 신청곡 쪽지', hue: 28,  ready: false },
-  { id: 'arcade-1992',    year: '1992', name: '오락실',   blurb: '100원과 대전대',        hue: 285, ready: false },
+  { id: 'dabang-1979',    year: '1979', name: '다방',     blurb: 'DJ 박스와 신청곡 쪽지', hue: 28,  ready: true  },
+  { id: 'arcade-1992',    year: '1992', name: '오락실',   blurb: '100원과 대전대',        hue: 285, ready: true  },
   { id: 'grandmas-summer',year: '1996', name: '할머니집', blurb: '마루와 매미',           hue: 95,  ready: true  },
   { id: 'midnight-dial',  year: '1997', name: '라디오',   blurb: '주파수 사이의 잡음',    hue: 210, ready: true  },
   { id: 'walkman-1999',   year: '1999', name: '워크맨',   blurb: 'A면과 B면',             hue: 340, ready: true  },

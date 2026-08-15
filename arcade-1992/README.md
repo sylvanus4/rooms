@@ -58,8 +58,10 @@ other. Several loops in the same key and different tempos, colliding, is the
 defining sound of the room, and it is why they are all in one key: the clash has
 to be rhythmic, never harmonic.
 
-A machine in attract mode plays two bars and then leaves the room alone for two.
-Those gaps are most of what an empty arcade sounds like.
+A machine in attract mode plays one bar in four and leaves the room alone for
+the other three, at under half the level. Those gaps are most of what an empty
+arcade sounds like, and they are why an empty one feels lonely rather than
+merely quiet.
 
 ### The rest of the graph
 
@@ -99,13 +101,25 @@ channel so the tail is decorrelated and reads as a space rather than a filter.
 - **short**: 0.46 s, heavily damped, tight taps. The same hall with people in it.
 
 The density control crossfades between them and pulls the return level down at
-the same time. Measured through an analyser at `destination`, a transient decays
-to a tenth of its peak in about 1.15 s in the empty room and about 0.30 s in the
-full one, and that ratio is the whole piece.
+the same time.
+
+This was measured rather than asserted. With every layer except the coins
+switched off through the real toggle buttons, a coin dropped into a cabinet and
+an `AnalyserNode` sampling RMS at `destination` every 25 ms, the tail falls 30 dB
+in a **median 1.2 to 1.4 s with nobody in the room and 0.40 to 0.50 s with
+thirty eight people in it**, a ratio between 2.5 and 3.4 to 1 depending on the
+run, over four drops at each setting. Mean level across the same range moves by
+about 1.8 to 1, which is the smaller half of the effect. A room that fills up
+does not mainly get louder. It gets shorter.
+
+One consequence worth stating: the limiter had to be moved up to -4 dB and 12:1.
+At -11 dB and 14:1 it was quietly doing automatic level control, and an empty
+arcade came out of it as loud as a full one, which deleted the mechanic.
 
 Master chain: layer buses each with a dry gain and a reverb send, into a
-`DynamicsCompressor` at -11 dB and 14:1 so nothing ever clips, into a master
-gain, into `destination`.
+`DynamicsCompressor` acting as a safety limiter, into a master gain, into
+`destination`. Peak RMS at `destination` measured 0.13 at the default setting
+and 0.11 to 0.16 across the whole range of the control.
 
 ## Running it
 

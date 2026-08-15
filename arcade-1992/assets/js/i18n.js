@@ -79,7 +79,7 @@ export const STRINGS = {
     en: 'murmur, and the collective noise when a match ends',
     ko: '웅성거림, 그리고 한 판이 끝날 때의 함성',
   },
-  layCoins: { en: 'Coins and controls', ko: '동전과 조작' },
+  layCoins: { en: 'Coins', ko: '동전' },
   layCoinsNote: {
     en: 'coins into a metal tray, joystick clatter, buttons being mashed',
     ko: '철제 동전통에 떨어지는 동전, 조이스틱 소리, 버튼 연타',

@@ -168,16 +168,19 @@ body {
 
 .cover {
   position: relative;
+  z-index: 10;
   min-height: 100dvh;
   display: grid;
   align-content: center;
   justify-items: start;
   gap: var(--s-2);
   padding: var(--s-6) clamp(1.1rem, 6vw, 7rem) var(--s-5);
+  /* Not opaque. The door screen is the room seen from the doorway, so the
+     scene behind it stays faintly visible instead of being covered up. */
   background:
-    radial-gradient(120% 90% at 14% 8%, rgba(255, 186, 92, 0.3), transparent 58%),
-    radial-gradient(80% 70% at 88% 96%, rgba(125, 28, 31, 0.34), transparent 62%),
-    linear-gradient(168deg, var(--room-mid), var(--page) 68%);
+    radial-gradient(120% 90% at 14% 8%, rgba(255, 186, 92, 0.22), transparent 58%),
+    radial-gradient(80% 70% at 88% 96%, rgba(125, 28, 31, 0.3), transparent 62%),
+    linear-gradient(168deg, rgba(21, 12, 6, 0.86), rgba(10, 5, 2, 0.95) 68%);
 }
 .cover::after {
   content: "";

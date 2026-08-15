@@ -69,7 +69,7 @@ const PLACES = [
  * that tries to hold the whole row holds nothing at all.                     */
 const FRAME = {
   wide: '0 150 1600 900',
-  tall: '500 40 660 1160',
+  tall: '600 300 520 900',
 };
 
 function frameScene() {
@@ -235,10 +235,12 @@ function drawCrowd() {
 /* ── the one control ─────────────────────────────────────────────────── */
 
 function bandFor(n) {
+  /* the thresholds line up with how many machines are actually in play, so the
+   * text never claims a busy room while two cabinets are running */
   if (n === 0) return 0;
-  if (n <= 6) return 1;
-  if (n <= 18) return 2;
-  if (n <= 30) return 3;
+  if (n <= 10) return 1;
+  if (n <= 21) return 2;
+  if (n <= 31) return 3;
   return 4;
 }
 

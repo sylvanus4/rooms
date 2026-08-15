@@ -564,7 +564,9 @@ body.is-live .hud { opacity: 1; visibility: visible; }
   .track { height: 46px; }
   .slug { font-size: 0.58rem; letter-spacing: 0.2em; }
   .hero-line { margin-bottom: var(--s-3); }
-  #insert { padding: 0 var(--s-2); }
+  /* the cabinets are tappable directly, so the hint can go and the
+     controls stay inside one screen with the room still visible above */
+  .row-actions { display: none; }
 }
 
 @media (max-height: 620px) {

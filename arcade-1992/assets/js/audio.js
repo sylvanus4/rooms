@@ -235,7 +235,7 @@ export class Arcade {
     /* Trimmed by ear and then by measurement: a packed room has a lot of
      * simultaneous sources and this keeps peak RMS at destination inside the
      * 0.09 to 0.20 window across the whole range of the density control. */
-    this.bus.gain.value = 0.82;
+    this.bus.gain.value = 0.70;
     this.bus.connect(this.limiter).connect(this.master).connect(ctx.destination);
 
     /* Two rooms, crossfaded. This is the density mechanic made audible. */
