@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Midnight Dial</title>
+<meta name="description" content="Korean late night radio, 1997. Turn the knob until something finds you. Six generative stations, synthesised live in the browser.">
+<link rel="canonical" href="https://sylvanus4.github.io/midnight-dial/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Midnight Dial">
+<meta property="og:description" content="Korean late night radio, 1997. Turn the knob until something finds you.">
+<meta property="og:url" content="https://sylvanus4.github.io/midnight-dial/">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#05060b">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23090c15'/><path d='M4 21h24' stroke='%23a4691f' stroke-width='2'/><path d='M13 7v19' stroke='%23ffb648' stroke-width='2'/></svg>">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- Film grain. One rasterised turbulence, animated by transform only. -->
+<svg class="grain" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <filter id="grain-filter" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#grain-filter)"/>
+</svg>
+<div class="vignette" aria-hidden="true"></div>
+
+<header class="topbar">
+  <p class="topbar__mark" data-i18n="brand.mark">MIDNIGHT DIAL</p>
+  <button type="button" class="lang" id="lang-toggle" data-i18n="lang.toggle" data-i18n-aria="lang.toggleAria" aria-label="Switch to Korean">한국어</button>
+</header>
+
+<main class="stage">
+
+  <div class="intro">
+    <h1 class="intro__title" data-i18n="hero.title">Midnight Dial</h1>
+    <p class="intro__line" data-i18n="hero.line">Korean late night radio, 1997. Turn the knob until something finds you.</p>
+  </div>
+
+  <section class="receiver" aria-labelledby="receiver-heading">
+    <h2 class="sr-only" id="receiver-heading" data-i18n="brand.model">MODEL 97-FM</h2>
+
+    <div class="chassis" id="chassis" data-power="off">
+
+      <div class="chassis__top">
+        <span class="chassis__badge" data-i18n="brand.model">MODEL 97-FM</span>
+        <span class="chassis__band" data-i18n="ind.band">FM BAND</span>
+      </div>
+
+      <!-- ---------- the faceplate stack: plate > scale > needle > glass ---------- -->
+      <div class="faceplate">
+        <div class="faceplate__lightwell" aria-hidden="true"></div>
+
+        <p class="sr-only" id="tuner-label" data-i18n="tuner.label">Tuning dial</p>
+        <p class="sr-only" id="tuner-help" data-i18n="tuner.help">Drag, scroll, or use the arrow keys. Page Up and Page Down jump a full megahertz.</p>
+
+        <div class="scale"
+             id="scale"
+             role="slider"
+             tabindex="0"
+             aria-orientation="horizontal"
+             aria-labelledby="tuner-label"
+             aria-describedby="tuner-help"
+             aria-valuemin="88"
+             aria-valuemax="108"
+             aria-valuenow="92.6"
+             aria-valuetext="92.6 megahertz, Between stations">
+          <div class="scale__ticks" id="ticks" aria-hidden="true"></div>
+          <div class="scale__marks" id="marks" aria-hidden="true"></div>
+          <div class="needle" id="needle" aria-hidden="true">
+            <span class="needle__shadow"></span>
+            <span class="needle__line"></span>
+            <span class="needle__cap"></span>
+          </div>
+        </div>
+
+        <div class="glass" aria-hidden="true">
+          <span class="glass__specular"></span>
+          <span class="glass__reflection"></span>
+        </div>
+      </div>
+
+      <!-- ---------- readout ---------- -->
+      <div class="readout">
+        <p class="readout__freq">
+          <span class="readout__digits" id="freq-digits">92.6</span>
+          <span class="readout__unit" data-i18n="unit.mhz">MHz</span>
+        </p>
+        <div class="readout__id">
+          <p class="readout__station" id="station-name" data-i18n="state.off">Receiver off</p>
+          <p class="readout__desc" id="station-desc" data-i18n="state.offDesc" aria-live="polite">Nothing is playing. Press power to start the tubes warming.</p>
+        </div>
+      </div>
+
+      <!-- ---------- meter and lamps ---------- -->
+      <div class="instruments">
+        <div class="meter" role="img" id="meter" aria-label="Signal strength meter">
+          <span class="meter__label" data-i18n="ind.signal">SIGNAL</span>
+          <span class="meter__bars" id="meter-bars" aria-hidden="true"></span>
+        </div>
+        <div class="lamps">
+          <span class="lamp" id="lamp-lock"><i aria-hidden="true"></i><span data-i18n="ind.lock">LOCK</span></span>
+          <span class="lamp" id="lamp-stereo"><i aria-hidden="true"></i><span data-i18n="ind.stereo">STEREO</span></span>
+        </div>
+      </div>
+
+      <!-- ---------- controls ---------- -->
+      <div class="controls">
+        <button type="button" class="power" id="power" aria-pressed="false" data-i18n-aria="ctrl.powerOnAria" aria-label="Turn the receiver on">
+          <span class="power__ring" aria-hidden="true"></span>
+          <span class="power__text" data-i18n="ctrl.power">Power</span>
+        </button>
+
+        <div class="knobs">
+          <button type="button" class="mute" id="mute" aria-pressed="false" data-i18n-aria="ctrl.muteAria" aria-label="Mute the receiver">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+              <path class="mute__speaker" d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/>
+              <path class="mute__wave" d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.8a7.5 7.5 0 0 1 0 10.4"/>
+              <path class="mute__cross" d="M15.8 9.8l5.4 4.4M21.2 9.8l-5.4 4.4"/>
+            </svg>
+            <span class="sr-only" data-i18n="ctrl.mute">Mute</span>
+          </button>
+
+          <label class="volume">
+            <span class="volume__label" data-i18n="ctrl.volume">Volume</span>
+            <input type="range" id="volume" min="0" max="100" value="75" step="1" data-i18n-aria="ctrl.volume" aria-label="Volume">
+          </label>
+        </div>
+      </div>
+
+      <p class="hint" id="hint" data-i18n="hero.hint">Press power, then drag the dial. Six stations are hiding in the static. Headphones help.</p>
+      <p class="hint hint--error" id="error" role="status" hidden></p>
+
+      <div class="chassis__grille" aria-hidden="true"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p data-i18n="foot.synth">Every sound here is generated in your browser with the Web Audio API. No recordings, no samples.</p>
+  <p><a class="footer__link" href="https://sylvanus4.github.io" data-i18n="foot.credit">Built by Hyojung Han</a></p>
+</footer>
+
+<script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

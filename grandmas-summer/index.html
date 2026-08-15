@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grandma's Summer</title>
+<meta name="description" content="One summer day at your grandmother's house, 1996. Drag the sun and the light, the shadows and the whole soundscape move with it. Every sound is synthesized live in the browser.">
+<meta name="color-scheme" content="light">
+<link rel="canonical" href="https://sylvanus4.github.io/grandmas-summer/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Grandma's Summer">
+<meta property="og:description" content="One summer day at your grandmother's house, 1996. Drag the sun.">
+<meta property="og:url" content="https://sylvanus4.github.io/grandmas-summer/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f2ead6'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23e8943f'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="stage" id="stage">
+  <svg class="scene" id="scene" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" class="stop-sky-top"/>
+        <stop offset="0.62" class="stop-sky-mid"/>
+        <stop offset="1" class="stop-sky-low"/>
+      </linearGradient>
+      <radialGradient id="sunGlow" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0" class="stop-glow-in"/>
+        <stop offset="1" class="stop-glow-out"/>
+      </radialGradient>
+      <linearGradient id="yardGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" class="stop-dirt-far"/>
+        <stop offset="1" class="stop-dirt-near"/>
+      </linearGradient>
+      <linearGradient id="floorGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" class="stop-floor-far"/>
+        <stop offset="1" class="stop-floor-near"/>
+      </linearGradient>
+      <clipPath id="openClip"><rect id="openClipRect" x="300" y="96" width="1170" height="578"/></clipPath>
+      <filter id="heat" x="-4%" y="-4%" width="108%" height="112%" color-interpolation-filters="sRGB">
+        <feTurbulence id="heatTurb" type="fractalNoise" baseFrequency="0.006 0.03" numOctaves="2" seed="4" result="n"/>
+        <feDisplacementMap id="heatDisp" in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+
+    <!-- ==================== OUTSIDE (through the open door) ==================== -->
+    <g clip-path="url(#openClip)">
+     <!-- #outdoor is re-anchored in portrait; every child keeps its own coordinates -->
+     <g id="outdoor">
+      <rect id="skyRect" x="300" y="96" width="1170" height="578" fill="url(#skyGrad)"/>
+      <g id="stars" class="stars"></g>
+
+      <!-- celestial glow in the scene, tracks the handle -->
+      <circle id="glowDisc" cx="880" cy="220" r="300" fill="url(#sunGlow)"/>
+
+      <g id="heatGroup" filter="url(#heat)">
+        <!-- far hills -->
+        <g id="hills">
+          <path class="f-hill-far" d="M300 452 L410 398 L512 424 L640 372 L760 414 L880 366 L1010 410 L1140 380 L1270 418 L1400 386 L1470 412 L1470 500 L300 500 Z"/>
+          <path class="f-hill-near" d="M300 470 L390 436 L500 458 L620 424 L742 452 L868 420 L990 450 L1120 428 L1250 456 L1380 432 L1470 452 L1470 520 L300 520 Z"/>
+        </g>
+
+        <!-- persimmon tree behind the wall -->
+        <g class="tree" id="tree">
+          <path class="f-wood-mid" d="M1306 500 L1296 372 L1322 372 L1330 500 Z"/>
+          <circle class="f-hedge" cx="1312" cy="336" r="96"/>
+          <circle class="f-hedge" cx="1232" cy="374" r="62"/>
+          <circle class="f-hedge" cx="1388" cy="372" r="58"/>
+          <circle class="f-melon" cx="1268" cy="352" r="9"/>
+          <circle class="f-melon" cx="1352" cy="330" r="8"/>
+          <circle class="f-melon" cx="1310" cy="392" r="9"/>
+        </g>
+
+        <!-- stone wall + hedge line -->
+        <rect id="wallRect" class="f-wall" x="300" y="452" width="1170" height="58"/>
+        <path id="hedgeLine" class="f-hedge" d="M300 456 q40 -22 78 -2 q42 -24 84 -1 q44 -22 86 0 q40 -20 82 -2 q44 -22 86 1 q42 -20 84 -1 q44 -22 86 0 q42 -20 84 -2 q46 -22 88 1 q40 -18 78 0 l0 22 l-836 0 Z" transform="translate(0,2)"/>
+        <g id="wallShade" class="f-wall-shade">
+          <rect x="300" y="498" width="1170" height="12" opacity="0.35"/>
+        </g>
+
+        <!-- the yard -->
+        <rect id="yardRect" x="300" y="504" width="1170" height="172" fill="url(#yardGrad)"/>
+        <path id="grass" class="f-grass" d="M300 560 q120 -26 240 -6 q130 22 250 -4 q120 -26 250 -2 q120 24 232 -8 l0 132 l-972 0 Z" opacity="0.5"/>
+
+        <!-- 장독대: jars on a low stone base, out in front of the laundry.
+             Each prop carries its own cast shadow so one transform moves both. -->
+        <g class="jars" id="jars">
+          <ellipse data-shadow data-ox="430" data-oy="654" cx="430" cy="654" rx="118" ry="15"/>
+          <ellipse data-shadow data-ox="352" data-oy="640" cx="352" cy="640" rx="30" ry="9"/>
+          <rect class="f-wall" x="322" y="636" width="230" height="14" rx="4"/>
+          <ellipse class="f-jar" cx="368" cy="608" rx="34" ry="32"/>
+          <path class="f-jar-lit" d="M348 588 a26 26 0 0 1 24 -12 l0 9 a20 20 0 0 0 -18 9 Z" opacity="0.45"/>
+          <ellipse class="f-jar-dark" cx="368" cy="578" rx="21" ry="6"/>
+          <ellipse class="f-jar" cx="438" cy="614" rx="42" ry="40"/>
+          <path class="f-jar-lit" d="M414 590 a32 32 0 0 1 30 -15 l0 10 a25 25 0 0 0 -23 12 Z" opacity="0.45"/>
+          <ellipse class="f-jar-dark" cx="438" cy="577" rx="26" ry="7"/>
+          <ellipse class="f-jar" cx="506" cy="612" rx="28" ry="26"/>
+          <ellipse class="f-jar-dark" cx="506" cy="588" rx="17" ry="5"/>
+        </g>
+
+        <!-- laundry line -->
+        <g class="laundry" id="laundry">
+          <ellipse data-shadow data-ox="892" data-oy="628" cx="892" cy="628" rx="28" ry="9"/>
+          <path    data-shadow data-ox="620" data-oy="576" d="M556 566 h128 v10 h-128 Z"/>
+          <path    data-shadow data-ox="770" data-oy="580" d="M712 570 h116 v10 h-116 Z"/>
+          <rect class="f-wood-mid" x="346" y="486" width="10" height="156"/>
+          <rect class="f-wood-mid" x="886" y="482" width="10" height="150"/>
+          <path class="stroke-line" d="M351 492 q265 30 540 -6" fill="none"/>
+          <g class="laundry__item laundry__item--a">
+            <path class="f-cloth" d="M556 518 h128 v92 l-18 14 h-92 l-18 -14 Z"/>
+          </g>
+          <g class="laundry__item laundry__item--b">
+            <path class="f-cloth-b" d="M712 512 h116 v104 l-16 12 h-84 l-16 -12 Z"/>
+          </g>
+        </g>
+
+        <!-- 평상: the wooden platform, with watermelon -->
+        <g class="pyeongsang" id="pyeongsang">
+          <rect data-shadow data-ox="1180" data-oy="646" x="1000" y="634" width="360" height="24" rx="12"/>
+          <rect class="f-wood-mid" x="1000" y="556" width="360" height="26" rx="5"/>
+          <rect class="f-wood-dark" x="1000" y="582" width="360" height="10"/>
+          <rect class="f-wood-dark" x="1016" y="592" width="16" height="52"/>
+          <rect class="f-wood-dark" x="1328" y="592" width="16" height="52"/>
+          <!-- a half, cut face up, and a wedge set on its rind -->
+          <path class="f-melon-rind" d="M1058 552 A46 46 0 0 1 1150 552 Z"/>
+          <ellipse class="f-melon-rind" cx="1104" cy="552" rx="46" ry="8"/>
+          <ellipse class="f-melon" cx="1104" cy="551" rx="39" ry="6"/>
+          <circle class="f-seed" cx="1089" cy="551" r="2.6"/>
+          <circle class="f-seed" cx="1111" cy="553" r="2.6"/>
+          <circle class="f-seed" cx="1124" cy="549" r="2.3"/>
+          <path class="f-melon" d="M1180 554 L1240 554 L1210 514 Z"/>
+          <path class="f-melon-rind" d="M1178 554 h64 v8 h-64 Z"/>
+        </g>
+
+        <!-- rain, injected by script -->
+        <g id="rain" class="rain"></g>
+      </g>
+     </g>
+    </g>
+
+    <!-- ==================== INSIDE (the 마루 and the door frame) ==================== -->
+    <!-- light thrown from the doorway onto the floorboards -->
+    <rect id="floorBase" class="f-floor-base" x="0" y="674" width="1600" height="326" fill="url(#floorGrad)"/>
+    <polygon id="lightPatch" class="light-patch" points="300,706 900,706 1010,1000 190,1000"/>
+    <g id="planks" class="planks"></g>
+    <rect id="sillDark" class="f-wood-dark" x="0" y="668" width="1600" height="14"/>
+    <rect id="sillMid" class="f-wood-mid" x="128" y="674" width="1342" height="30"/>
+
+    <!-- door frame -->
+    <rect id="frameTop" class="f-wood-dark" x="0" y="0" width="1600" height="96"/>
+    <rect id="frameLeft" class="f-wood-dark" x="0" y="96" width="128" height="586"/>
+    <rect id="frameRight" class="f-wood-dark" x="1470" y="96" width="130" height="586"/>
+    <!-- the slid-open paper door panel -->
+    <g class="door-panel">
+      <rect id="paperRect" class="f-paper" x="140" y="104" width="152" height="566"/>
+      <rect id="panelEdgeL" class="f-wood-mid" x="128" y="96" width="18" height="578"/>
+      <rect id="panelEdgeR" class="f-wood-mid" x="286" y="96" width="18" height="578"/>
+      <g id="lattice" class="lattice"></g>
+    </g>
+
+    <!-- the fan, foreground -->
+    <g class="fan" id="fanGroup">
+      <ellipse data-shadow data-ox="300" data-oy="978" cx="300" cy="978" rx="118" ry="18"/>
+      <rect class="f-fan-body" x="284" y="700" width="32" height="266" rx="10"/>
+      <ellipse class="f-fan-body" cx="300" cy="972" rx="96" ry="22"/>
+      <g class="fan__head" id="fanHead">
+        <circle class="f-fan-body" cx="300" cy="690" r="132"/>
+        <circle class="f-fan-inner" cx="300" cy="690" r="120"/>
+        <circle class="f-fan-cage" cx="300" cy="690" r="122"/>
+        <g class="fan__blades" id="fanBlades">
+          <path class="f-fan-blade" d="M300 690 q56 -74 92 -26 q22 44 -92 26 Z"/>
+          <path class="f-fan-blade" d="M300 690 q56 -74 92 -26 q22 44 -92 26 Z" transform="rotate(120 300 690)"/>
+          <path class="f-fan-blade" d="M300 690 q56 -74 92 -26 q22 44 -92 26 Z" transform="rotate(240 300 690)"/>
+        </g>
+        <circle class="f-fan-hub" cx="300" cy="690" r="26"/>
+        <g class="f-fan-cage" id="fanGrill"></g>
+      </g>
+    </g>
+
+    <!-- atmosphere -->
+    <rect id="warmVeil" class="warm-veil" x="0" y="0" width="1600" height="1000"/>
+  </svg>
+
+  <div class="bloom" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+</div>
+
+<!-- ==================== the sun rail ==================== -->
+<div class="rail" id="rail">
+  <svg class="rail__svg" id="railSvg" aria-hidden="true" focusable="false"><path id="railPath" class="rail__path" fill="none"/><path id="railHit" class="rail__hit" fill="none"/></svg>
+  <div class="sun" id="sun" role="slider" tabindex="0"
+       aria-label="Time of day" aria-valuemin="300" aria-valuemax="1440" aria-valuenow="850" aria-valuetext="2:10 PM">
+    <span class="sun__disc"></span>
+    <span class="sun__ring"></span>
+  </div>
+</div>
+
+<header class="topbar">
+  <h1 class="brand">
+    <span class="brand__en" data-i18n="title">Grandma's Summer</span>
+    <span class="brand__sub" data-i18n="subtitle">1996 . the countryside . one day</span>
+  </h1>
+  <div class="lang" role="group" aria-label="Language">
+    <button class="lang__btn is-on" id="langEn" type="button" aria-pressed="true">EN</button>
+    <button class="lang__btn" id="langKo" type="button" aria-pressed="false">한국어</button>
+  </div>
+</header>
+
+<main class="hud" id="hud">
+  <section class="readout" aria-labelledby="nowLabel">
+    <p class="readout__label" id="nowLabel" data-i18n="nowLabel">Right now</p>
+    <p class="readout__clock" id="clock">2:10 PM</p>
+    <p class="readout__caption" id="caption" aria-live="polite">the cicadas are at their loudest</p>
+    <footer class="credit">
+      <p><span data-i18n="creditText">Every sound here is generated by the browser. No recordings, no samples.</span>
+      <a class="credit__link" href="https://sylvanus4.github.io" rel="noopener">sylvanus4</a></p>
+    </footer>
+  </section>
+
+  <section class="layers" aria-labelledby="layersLabel">
+    <p class="layers__label" id="layersLabel" data-i18n="layersLabel">What you are hearing</p>
+    <ul class="layers__list" id="layerList"></ul>
+  </section>
+
+  <section class="controls" aria-labelledby="controlsLabel">
+    <p class="sr-only" id="controlsLabel" data-i18n="controlsLabel">Playback controls</p>
+    <div class="controls__row">
+      <button class="btn" id="autoBtn" type="button" aria-pressed="false"><span data-i18n="letItRun">Let it run</span></button>
+      <button class="btn" id="fanBtn" type="button" aria-pressed="true"><span data-i18n="fanOn">Fan</span></button>
+      <button class="btn" id="rainBtn" type="button" aria-pressed="false"><span data-i18n="rain">Shower</span></button>
+    </div>
+    <div class="controls__row controls__row--vol">
+      <button class="btn btn--icon" id="muteBtn" type="button" aria-pressed="false" aria-label="Mute">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="20" height="20"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="wave" d="M16 9.2a4 4 0 0 1 0 5.6M18.6 6.6a7.6 7.6 0 0 1 0 10.8" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round"/><path class="cross" d="M16.5 9.5l5 5m0-5l-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+      </button>
+      <label class="vol">
+        <span class="sr-only" data-i18n="volume">Volume</span>
+        <input class="vol__input" id="vol" type="range" min="0" max="100" value="72" step="1">
+      </label>
+    </div>
+  </section>
+</main>
+
+<div class="intro" id="intro">
+  <div class="intro__inner">
+    <p class="intro__eyebrow" data-i18n="eyebrow">Summer, 1996</p>
+    <p class="intro__hero" data-i18n="hero">One summer day at your grandmother's house, 1996. Drag the sun.</p>
+    <button class="btn btn--begin" id="begin" type="button"><span data-i18n="begin">Begin</span></button>
+    <p class="intro__note" data-i18n="beginNote">Sound is the whole point. Headphones help.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

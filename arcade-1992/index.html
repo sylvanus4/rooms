@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Arcade, 1992</title>
+<meta name="description" content="A neighbourhood arcade in Korea, 1992, rebuilt entirely from synthesized sound. Move one control and the room fills with people, and everything about it changes.">
+<meta name="theme-color" content="#05070b">
+<meta property="og:title" content="The Arcade, 1992">
+<meta property="og:description" content="Twenty odd cabinets, one hundred won a play, and a roller rink upstairs. One control: how many people are in the room.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sylvanus4.github.io/arcade-1992/">
+<link rel="canonical" href="https://sylvanus4.github.io/arcade-1992/">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="is-cover" data-lang="en">
+
+<main class="stage">
+
+  <!-- ── the hall ────────────────────────────────────────────────────── -->
+  <!-- The hall is drawn on a 1600 x 1200 canvas and framed twice: a wide window
+       for landscape, a tall and much closer one for portrait. A phone cannot be
+       shown a panorama, it has to be walked further into the room. -->
+  <svg class="scene" id="scene" viewBox="0 150 1600 900" preserveAspectRatio="xMidYMid slice"
+       role="img" aria-label="A dim arcade hall lit by the screens of the cabinets along the walls.">
+    <defs>
+      <linearGradient id="gCeil" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#04060a"/><stop offset="1" stop-color="#0b1119"/>
+      </linearGradient>
+      <linearGradient id="gBack" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#0a1017"/><stop offset="1" stop-color="#141c26"/>
+      </linearGradient>
+      <linearGradient id="gFloor" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#141b24"/><stop offset="0.55" stop-color="#0a0e14"/>
+        <stop offset="1" stop-color="#05070a"/>
+      </linearGradient>
+      <linearGradient id="gLeft" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#04060a"/><stop offset="1" stop-color="#101822"/>
+      </linearGradient>
+      <linearGradient id="gRight" x1="1" y1="0" x2="0" y2="0">
+        <stop offset="0" stop-color="#06080c"/><stop offset="1" stop-color="#111925"/>
+      </linearGradient>
+      <linearGradient id="gSodium" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffb35c"/><stop offset="0.5" stop-color="#f08a2a"/>
+        <stop offset="1" stop-color="#7d3c08"/>
+      </linearGradient>
+      <linearGradient id="gVinyl" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#a2313a"/><stop offset="1" stop-color="#4a1216"/>
+      </linearGradient>
+      <radialGradient id="gPoolC" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0" stop-color="#3ff0ff" stop-opacity="0.5"/>
+        <stop offset="1" stop-color="#3ff0ff" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="gPoolM" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0" stop-color="#ff56c8" stop-opacity="0.45"/>
+        <stop offset="1" stop-color="#ff56c8" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="gSpill" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0" stop-color="#ff9a3c" stop-opacity="0.42"/>
+        <stop offset="1" stop-color="#ff9a3c" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="gVig" cx="0.5" cy="0.46" r="0.72">
+        <stop offset="0.45" stop-color="#000" stop-opacity="0"/>
+        <stop offset="1" stop-color="#000" stop-opacity="0.82"/>
+      </radialGradient>
+      <filter id="bloom" x="-70%" y="-70%" width="240%" height="240%">
+        <feGaussianBlur stdDeviation="11"/>
+      </filter>
+      <filter id="bloomBig" x="-90%" y="-90%" width="280%" height="280%">
+        <feGaussianBlur stdDeviation="30"/>
+      </filter>
+      <filter id="grain">
+        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/>
+        <feColorMatrix type="saturate" values="0"/>
+      </filter>
+    </defs>
+
+    <g id="room">
+      <polygon points="0,0 1600,0 1240,330 360,330" fill="url(#gCeil)"/>
+      <polygon points="0,0 360,330 360,690 0,1200" fill="url(#gLeft)"/>
+      <polygon points="1600,0 1240,330 1240,690 1600,1200" fill="url(#gRight)"/>
+      <rect x="360" y="330" width="880" height="360" fill="url(#gBack)"/>
+      <polygon points="0,1200 1600,1200 1240,690 360,690" fill="url(#gFloor)"/>
+
+      <!-- ceiling tubes, half of them dead, and the one that is going -->
+      <g class="tubes" opacity="0.5">
+        <rect x="500" y="96" width="260" height="8" rx="4" fill="#8fb6c8" opacity="0.30"/>
+        <rect x="860" y="96" width="260" height="8" rx="4" fill="#8fb6c8" opacity="0.11"/>
+        <rect x="596" y="228" width="200" height="7" rx="3" fill="#8fb6c8" opacity="0.24"/>
+        <rect x="824" y="228" width="200" height="7" rx="3" fill="#8fb6c8" opacity="0.07"/>
+      </g>
+
+      <!-- skirting, and the line where the wall meets the floor -->
+      <rect x="360" y="674" width="880" height="16" fill="#000" opacity="0.55"/>
+      <polygon points="0,1200 360,690 360,706 0,1200" fill="#000" opacity="0.5"/>
+      <polygon points="1600,1200 1240,690 1240,706 1600,1200" fill="#000" opacity="0.5"/>
+
+      <!-- the stairwell up to the rink, sodium light coming down it -->
+      <g id="stair">
+        <ellipse class="spill" cx="1348" cy="880" rx="470" ry="300" fill="url(#gSpill)"/>
+        <polygon points="1262,326 1438,348 1438,760 1262,690" fill="#000" opacity="0.88"/>
+        <polygon points="1284,350 1416,368 1416,716 1284,662" fill="url(#gSodium)" opacity="0.74"/>
+        <g opacity="0.6">
+          <polygon points="1284,600 1416,628 1416,650 1284,624" fill="#57290a" opacity="0.75"/>
+          <polygon points="1284,532 1416,558 1416,576 1284,554" fill="#57290a" opacity="0.6"/>
+          <polygon points="1284,466 1416,490 1416,506 1284,486" fill="#57290a" opacity="0.45"/>
+        </g>
+        <!-- somebody coming down from the rink, still in their skates -->
+        <path d="M 1330 560 q -13 4 -12 20 l 3 44 h 22 l 2 -44 q 1 -16 -12 -20 z"
+              fill="#2a1405" opacity="0.85"/>
+        <circle cx="1330" cy="548" r="11" fill="#2a1405" opacity="0.85"/>
+        <rect x="1258" y="316" width="184" height="30" fill="#0d1116"/>
+        <ellipse class="spill-hot" cx="1360" cy="716" rx="150" ry="62" fill="url(#gSpill)"/>
+      </g>
+
+      <!-- the tape line on the floor everybody queues behind -->
+      <polygon points="450,896 1150,896 1186,916 414,916" fill="#c9a227" opacity="0.09"/>
+    </g>
+
+    <g id="pools"></g>
+    <g id="stools"></g>
+    <g id="cabinets"></g>
+    <g id="crowd"></g>
+
+    <rect x="0" y="0" width="1600" height="1200" fill="url(#gVig)" pointer-events="none"/>
+    <rect class="grain" x="0" y="0" width="1600" height="1200" filter="url(#grain)"
+          opacity="0.055" pointer-events="none"/>
+  </svg>
+
+  <!-- ── the cover ───────────────────────────────────────────────────── -->
+  <section class="cover" id="cover" aria-labelledby="title">
+    <div class="cover-inner">
+      <p class="eyebrow" data-i18n="eyebrow">Twenty odd cabinets, one hundred won a play</p>
+      <h1 id="title" data-i18n="h1">A neighbourhood arcade. Korea, 1992.</h1>
+      <p class="hero-line" data-i18n="heroLine">The arcade, 1992. How many people are standing in it decides what room it is.</p>
+      <button class="begin" id="begin" type="button" data-i18n="beginLabel">Open the door</button>
+      <p class="begin-note" data-i18n="beginNote">Sound is the whole piece. Headphones, and a little volume.</p>
+      <p class="fault" id="fault" role="status"></p>
+    </div>
+  </section>
+
+  <!-- ── the controls ────────────────────────────────────────────────── -->
+  <div class="hud" id="hud">
+
+    <div class="hud-top">
+      <p class="slug" data-i18n="slug">Arcade / 1992 / afternoon</p>
+      <div class="hud-top-right">
+        <button class="chip lang" id="lang" type="button" data-i18n="langLabel">한국어로 보기</button>
+      </div>
+    </div>
+
+    <div class="hud-bottom">
+      <div class="panel panel-density">
+        <div class="dens-head">
+          <span class="cap" id="dens-label" data-i18n="densityLabel">People in the room</span>
+          <span class="dens-count"><output id="dens-count">17</output><span class="dens-unit" id="dens-unit" data-i18n="densityUnit">people</span></span>
+        </div>
+        <div class="track" id="density" role="slider" tabindex="0"
+             aria-labelledby="dens-label" aria-valuemin="0" aria-valuemax="38"
+             aria-valuenow="17" aria-valuetext="17 people">
+          <div class="track-rail"></div>
+          <div class="track-fill" id="dens-fill"></div>
+          <div class="track-figs" id="dens-figs" aria-hidden="true"></div>
+          <div class="knob" id="dens-knob"></div>
+        </div>
+        <p class="dens-state" id="dens-state" aria-live="polite">Busy.</p>
+        <p class="dens-help micro" data-i18n="densityHelp">Drag, or use the arrow keys. Home empties the room, End fills it.</p>
+      </div>
+
+      <div class="panel panel-layers">
+        <p class="cap" data-i18n="layersTitle">What is making sound</p>
+        <ul class="layers" id="layers"></ul>
+        <div class="row-actions">
+          <button class="chip" id="insert" type="button" data-i18n="coinHint">Click any cabinet to put a coin in.</button>
+        </div>
+      </div>
+
+      <div class="panel panel-out">
+        <div class="out-row">
+          <button class="chip mute" id="mute" type="button" aria-pressed="false" data-i18n="muteLabel">Mute</button>
+          <div class="vol">
+            <span class="cap" id="vol-label" data-i18n="volumeLabel">Volume</span>
+            <div class="track track-vol" id="volume" role="slider" tabindex="0"
+                 aria-labelledby="vol-label" aria-valuemin="0" aria-valuemax="100"
+                 aria-valuenow="70" aria-valuetext="70 percent">
+              <div class="track-rail"></div>
+              <div class="track-fill" id="vol-fill"></div>
+              <div class="knob" id="vol-knob"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="credit">
+  <span data-i18n="credit">Every sound here is synthesized in the browser. No recordings, no audio files, no network.</span>
+  <a href="https://sylvanus4.github.io" rel="noopener"><span data-i18n="by">Built by Hyojung Han</span></a>
+</footer>
+
+<script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,589 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   The Arcade, 1992
+   One look, committed to: a dark hall lit almost entirely by picture tubes.
+   Cyan is a machine somebody is playing, magenta is a machine talking to an
+   empty room, sodium orange is the stairwell up to the rink. Colour is state
+   here, not decoration.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ink */
+  --ink:        #05070b;
+  --ink-1:      #090d13;
+  --ink-2:      #10161f;
+  --panel:      rgba(8, 12, 18, 0.74);
+  --panel-edge: rgba(146, 186, 210, 0.16);
+  --panel-edge-hot: rgba(86, 232, 255, 0.42);
+
+  /* type */
+  --text:       #dfe9f1;
+  --text-dim:   #a3b4c2;
+  --text-micro: #8d9dab;
+  --text-ink:   #05070b;
+
+  /* state */
+  --cyan:       #56e8ff;
+  --cyan-deep:  #1b7f95;
+  --magenta:    #ff6ad0;
+  --magenta-deep: #8f2a70;
+  --sodium:     #ffa347;
+  --vinyl:      #a2313a;
+  --dead:       #3a4652;
+
+  /* type stacks. No web fonts are loaded, so the character has to come from
+     the stack, the case and the tracking. Condensed grotesque for display,
+     a monospace for every number so the counters do not jitter.            */
+  --font-display: "Haettenschweiler", "Arial Narrow", "Roboto Condensed",
+                  "Liberation Sans Narrow", "Oswald", "HelveticaNeue-CondensedBold",
+                  "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-body:    ui-sans-serif, system-ui, "Segoe UI", Roboto,
+                  "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-mono:    ui-monospace, "SFMono-Regular", Menlo, "DejaVu Sans Mono", Consolas, monospace;
+
+  --t-hero:   clamp(2.1rem, 0.9rem + 6.1vw, 6.4rem);
+  --t-line:   clamp(0.98rem, 0.86rem + 0.62vw, 1.5rem);
+  --t-body:   clamp(0.84rem, 0.79rem + 0.2vw, 0.95rem);
+  --t-cap:    clamp(0.62rem, 0.58rem + 0.14vw, 0.72rem);
+  --t-count:  clamp(1.6rem, 1.1rem + 1.9vw, 2.9rem);
+
+  /* rhythm: deliberately uneven, tight at the controls, open at the hero */
+  --s-1: 0.32rem;
+  --s-2: 0.62rem;
+  --s-3: 1.05rem;
+  --s-5: 1.9rem;
+  --s-8: 3.4rem;
+
+  --r-sm: 3px;
+  --r-md: 7px;
+  --r-pill: 999px;
+
+  --dur-1: 130ms;
+  --dur-2: 260ms;
+  --dur-3: 620ms;
+  --dur-4: 1200ms;
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.30, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.50, 1);
+  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-inout:     cubic-bezier(0.65, 0.05, 0.36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--t-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ── the hall ─────────────────────────────────────────────────────────── */
+
+.stage {
+  position: fixed;
+  inset: 0;
+  display: block;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* the room breathes on the fluorescent tubes, not on a decorative timer */
+.tubes { animation: tube-flicker 7.3s var(--ease-inout) infinite; }
+@keyframes tube-flicker {
+  0%, 44%, 47%, 100% { opacity: 0.5; }
+  45%                { opacity: 0.26; }
+  46%                { opacity: 0.58; }
+}
+
+.spill      { animation: spill-breathe 11s var(--ease-inout) infinite; transform-origin: 1330px 770px; }
+.spill-hot  { animation: spill-breathe 8.5s var(--ease-inout) infinite reverse; transform-origin: 1346px 640px; }
+@keyframes spill-breathe {
+  0%, 100% { opacity: 0.86; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.045); }
+}
+
+/* screens: cyan while somebody is playing, magenta while attracting, dead grey
+   when the machine is off. The class is set from the density state.        */
+.cab-screen { transition: fill var(--dur-3) var(--ease-out-quart); }
+.cab-glow   { transition: opacity var(--dur-3) var(--ease-out-quart); }
+.cab-marquee{ transition: opacity var(--dur-3) var(--ease-out-quart); }
+.cab-pool   { transition: opacity var(--dur-3) var(--ease-out-quart); }
+
+.cab.is-play    .cab-glow { opacity: 0.95; }
+.cab.is-attract .cab-glow { opacity: 0.62; }
+.cab.is-dark    .cab-glow { opacity: 0; }
+.cab.is-dark    .cab-marquee { opacity: 0.08; }
+.cab.is-dark    .cab-screen  { fill: #0d1219; }
+
+.cab.is-play .cab-screen  { animation: screen-play 0.42s steps(2, end) infinite; }
+.cab.is-attract .cab-screen { animation: screen-attract 3.1s var(--ease-inout) infinite; }
+@keyframes screen-play    { 0% { opacity: 1; } 50% { opacity: 0.9; } 100% { opacity: 1; } }
+@keyframes screen-attract { 0%, 100% { opacity: 0.72; } 50% { opacity: 0.94; } }
+
+.cab { cursor: pointer; }
+.cab .cab-hit { fill: transparent; }
+.cab:hover .cab-marquee { opacity: 1; }
+.cab:active .cab-body { transform: translateY(1.5px); }
+.cab-body { transition: transform var(--dur-1) var(--ease-out-quart); }
+
+/* crowd silhouettes. They fade in as the room fills, and each one has a thin
+   rim of screen light on the side facing the machines.                     */
+.fig {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: translateY(9px) scaleY(0.985);
+  transition: opacity var(--dur-3) var(--ease-out-expo), transform var(--dur-3) var(--ease-spring);
+}
+.fig.is-in { opacity: 1; transform: translateY(0) scaleY(1); }
+.fig.is-in .fig-body { animation: sway 6s var(--ease-inout) infinite; }
+@keyframes sway {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  50%      { transform: translateX(1.6px) rotate(0.45deg); }
+}
+
+.grain { mix-blend-mode: overlay; }
+
+/* ── the cover ────────────────────────────────────────────────────────── */
+
+.cover {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: end;
+  padding: var(--s-5) clamp(1.1rem, 4vw, 5.5rem) clamp(2.2rem, 9vh, 6rem);
+  background:
+    radial-gradient(120% 90% at 12% 100%, rgba(5, 7, 11, 0.94) 0%, rgba(5, 7, 11, 0.55) 46%, rgba(5, 7, 11, 0) 78%),
+    linear-gradient(0deg, rgba(5, 7, 11, 0.86) 0%, rgba(5, 7, 11, 0) 62%);
+  transition: opacity var(--dur-3) var(--ease-out-expo), transform var(--dur-3) var(--ease-out-expo);
+}
+body.is-live .cover {
+  opacity: 0;
+  transform: translateY(-1.4rem);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.cover-inner { max-width: min(58ch, 100%); }
+
+.eyebrow {
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-cap);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  opacity: 0.85;
+}
+
+h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--t-hero);
+  font-stretch: condensed;
+  line-height: 0.9;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  color: #f2f8fc;
+  text-shadow: 0 0 38px rgba(86, 232, 255, 0.22), 0 2px 0 rgba(0, 0, 0, 0.6);
+}
+
+.hero-line {
+  margin: var(--s-3) 0 var(--s-5);
+  max-width: 46ch;
+  font-size: var(--t-line);
+  line-height: 1.4;
+  color: var(--text-dim);
+  text-wrap: balance;
+}
+
+.begin {
+  appearance: none;
+  min-height: 56px;
+  padding: 0 var(--s-5);
+  border: 1px solid var(--cyan);
+  border-radius: var(--r-sm);
+  background: rgba(86, 232, 255, 0.07);
+  color: #eafcff;
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: inset 0 0 26px rgba(86, 232, 255, 0.12), 0 0 0 rgba(86, 232, 255, 0);
+  transition: background-color var(--dur-2) var(--ease-out-quart),
+              box-shadow var(--dur-2) var(--ease-out-quart),
+              transform var(--dur-1) var(--ease-out-quart),
+              color var(--dur-2) var(--ease-out-quart);
+}
+.begin:hover  { background: rgba(86, 232, 255, 0.17); box-shadow: inset 0 0 30px rgba(86, 232, 255, 0.2), 0 0 34px rgba(86, 232, 255, 0.24); }
+.begin:active { transform: translateY(2px); }
+
+.begin-note {
+  margin: var(--s-3) 0 0;
+  font-size: var(--t-cap);
+  letter-spacing: 0.08em;
+  color: var(--text-micro);
+}
+
+.fault {
+  margin: var(--s-2) 0 0;
+  min-height: 1.2em;
+  max-width: 42ch;
+  color: var(--sodium);
+  font-size: var(--t-cap);
+}
+
+/* ── controls ─────────────────────────────────────────────────────────── */
+
+.hud {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(0.7rem, 2vw, 1.5rem);
+  pointer-events: none;
+  opacity: 0;
+  /* hidden, not merely transparent. A transparent panel still swallows the
+     click meant for the button underneath it, which is exactly what happened. */
+  visibility: hidden;
+  transition: opacity var(--dur-4) var(--ease-out-expo);
+}
+body.is-live .hud { opacity: 1; visibility: visible; }
+.hud > * { pointer-events: auto; }
+
+.hud-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.slug {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-cap);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-micro);
+  border-left: 2px solid var(--cyan);
+  padding-left: var(--s-2);
+}
+
+.hud-bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.15fr) minmax(0, 0.62fr);
+  align-items: end;
+  gap: var(--s-2);
+  max-height: 72vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--r-md);
+  padding: var(--s-3) var(--s-3) var(--s-2);
+  backdrop-filter: blur(9px);
+  min-width: 0;
+}
+.panel-density { padding-bottom: var(--s-3); }
+
+.cap {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--t-cap);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--text-micro);
+}
+
+.micro { font-size: var(--t-cap); color: var(--text-micro); letter-spacing: 0.04em; }
+
+.dens-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+.dens-count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.32em;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+#dens-count {
+  font-size: var(--t-count);
+  line-height: 1;
+  color: var(--cyan);
+  text-shadow: 0 0 22px rgba(86, 232, 255, 0.4);
+}
+.dens-unit {
+  font-size: var(--t-cap);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-micro);
+}
+
+/* the slider: a strip of little standing figures that light up */
+.track {
+  position: relative;
+  height: 52px;
+  margin: var(--s-2) 0 var(--s-1);
+  cursor: pointer;
+  touch-action: none;
+}
+.track-rail {
+  position: absolute;
+  left: 0; right: 0; bottom: 12px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(146, 186, 210, 0.22), rgba(146, 186, 210, 0.42));
+}
+.track-fill {
+  position: absolute;
+  left: 0; bottom: 12px;
+  height: 2px;
+  width: 45%;
+  background: linear-gradient(90deg, var(--cyan-deep), var(--cyan) 62%, var(--magenta));
+  box-shadow: 0 0 14px rgba(86, 232, 255, 0.5);
+  transform-origin: left center;
+  transition: width var(--dur-2) var(--ease-out-quart);
+}
+.track-figs {
+  position: absolute;
+  left: 0; right: 0; bottom: 14px;
+  height: 30px;
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+}
+.tick {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 8px;
+  background: rgba(146, 186, 210, 0.2);
+  transform-origin: 50% 100%;
+  transition: background-color var(--dur-2) var(--ease-out-quart),
+              transform var(--dur-2) var(--ease-spring);
+}
+.tick.is-on {
+  background: var(--cyan);
+  transform: scaleY(2.2);
+  box-shadow: 0 0 9px rgba(86, 232, 255, 0.55);
+}
+.tick.is-on.is-hot { background: var(--magenta); box-shadow: 0 0 9px rgba(255, 106, 208, 0.6); }
+
+.knob {
+  position: absolute;
+  bottom: 4px;
+  width: 16px;
+  height: 18px;
+  margin-left: -8px;
+  border-radius: 2px;
+  background: #eaf7ff;
+  box-shadow: 0 0 16px rgba(86, 232, 255, 0.75), 0 2px 6px rgba(0, 0, 0, 0.7);
+  transition: left var(--dur-2) var(--ease-out-quart), transform var(--dur-1) var(--ease-spring);
+}
+.track:hover .knob  { transform: scaleY(1.14); }
+.track:active .knob { transform: scaleY(0.92); }
+
+.dens-state {
+  margin: var(--s-1) 0 var(--s-1);
+  min-height: 3.1em;
+  color: var(--text-dim);
+  max-width: 62ch;
+}
+.dens-help { margin: 0; }
+
+/* layer readout */
+.layers { list-style: none; margin: var(--s-2) 0 var(--s-2); padding: 0; display: grid; gap: 3px; }
+.layers li { min-width: 0; }
+.lay {
+  width: 100%;
+  min-height: 44px;
+  display: grid;
+  grid-template-columns: 10px minmax(0, auto) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-1) var(--s-2);
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-dim);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--dur-1) var(--ease-out-quart),
+              border-color var(--dur-1) var(--ease-out-quart),
+              color var(--dur-1) var(--ease-out-quart);
+}
+.lay:hover { background: rgba(86, 232, 255, 0.08); border-color: var(--panel-edge-hot); color: var(--text); }
+.lay-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--dead);
+  transition: background-color var(--dur-2) var(--ease-out-quart), box-shadow var(--dur-2) var(--ease-out-quart);
+}
+.lay[aria-pressed="true"] .lay-dot { background: var(--cyan); box-shadow: 0 0 10px rgba(86, 232, 255, 0.8); }
+.lay[data-id="upstairs"][aria-pressed="true"] .lay-dot { background: var(--sodium); box-shadow: 0 0 10px rgba(255, 163, 71, 0.8); }
+.lay[data-id="crowd"][aria-pressed="true"] .lay-dot { background: var(--magenta); box-shadow: 0 0 10px rgba(255, 106, 208, 0.8); }
+.lay[aria-pressed="false"] { color: var(--text-micro); }
+.lay[aria-pressed="false"] .lay-name { text-decoration: line-through; text-decoration-color: rgba(163, 180, 194, 0.5); }
+.lay-name {
+  font-family: var(--font-mono);
+  font-size: var(--t-cap);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.lay-note {
+  font-size: var(--t-cap);
+  color: var(--text-micro);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row-actions { display: flex; gap: var(--s-2); flex-wrap: wrap; }
+
+.chip {
+  appearance: none;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--r-pill);
+  background: rgba(8, 12, 18, 0.6);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--t-cap);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--dur-1) var(--ease-out-quart),
+              border-color var(--dur-1) var(--ease-out-quart),
+              color var(--dur-1) var(--ease-out-quart),
+              transform var(--dur-1) var(--ease-out-quart);
+}
+.chip:hover  { border-color: var(--panel-edge-hot); color: var(--text); background: rgba(86, 232, 255, 0.1); }
+.chip:active { transform: translateY(1px); }
+.chip.mute[aria-pressed="true"] { border-color: var(--sodium); color: var(--sodium); }
+#insert { text-transform: none; letter-spacing: 0.03em; }
+
+.panel-out .out-row { display: flex; align-items: center; gap: var(--s-2); flex-wrap: wrap; }
+.vol { flex: 1 1 120px; min-width: 110px; }
+.track-vol { height: 44px; margin-bottom: 0; }
+.track-vol .track-rail, .track-vol .track-fill { bottom: 14px; }
+.track-vol .knob { bottom: 6px; height: 16px; }
+
+/* ── focus, always visible and always designed ────────────────────────── */
+
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+  border-radius: var(--r-sm);
+}
+.track:focus-visible .knob {
+  box-shadow: 0 0 0 3px rgba(86, 232, 255, 0.55), 0 0 22px rgba(86, 232, 255, 0.9);
+}
+
+/* ── credit ───────────────────────────────────────────────────────────── */
+
+.credit {
+  position: fixed;
+  left: clamp(0.7rem, 2vw, 1.5rem);
+  bottom: 0.35rem;
+  display: none;
+  gap: var(--s-2);
+  font-size: var(--t-cap);
+  color: var(--text-micro);
+  letter-spacing: 0.03em;
+  z-index: 2;
+}
+.credit a { color: var(--text-dim); text-decoration-color: rgba(86, 232, 255, 0.5); text-underline-offset: 3px; }
+.credit a:hover { color: var(--cyan); }
+
+/* ── responsive ───────────────────────────────────────────────────────── */
+
+/* On a wide screen the ceiling is dead space and the floor in front of the
+   crowded machine is not, so the layer readout goes up there and the bottom of
+   the frame is left to the people.                                          */
+@media (min-width: 1100px) {
+  .credit { display: flex; }
+  .hud { padding-bottom: 2.1rem; }
+  .hud-bottom { grid-template-columns: minmax(0, 1.85fr) minmax(0, 0.72fr); }
+  .panel-layers {
+    position: absolute;
+    top: calc(clamp(0.7rem, 2vw, 1.5rem) + 3.5rem);
+    right: clamp(0.7rem, 2vw, 1.5rem);
+    width: min(29rem, 33vw);
+  }
+}
+
+/* Below the desktop breakpoint the panels stack, so they have to give the room
+   back. The layer readout collapses from a list into a row of switches and the
+   notes drop away, which keeps the hall visible instead of the controls.    */
+@media (max-width: 1099px) {
+  .hud-bottom { grid-template-columns: minmax(0, 1fr); gap: var(--s-1); max-height: 52vh; }
+  .panel-layers .lay-note { display: none; }
+  .layers { display: flex; flex-wrap: wrap; gap: var(--s-1); margin: var(--s-2) 0; }
+  .lay { grid-template-columns: 10px auto; padding: var(--s-1) var(--s-2); border-color: var(--panel-edge); border-radius: var(--r-pill); }
+  .panel-layers .cap { display: none; }
+  .row-actions { margin-top: var(--s-1); }
+  .dens-state {
+    min-height: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 620px) {
+  .hud-bottom { max-height: 46vh; }
+  .panel { padding: var(--s-2); }
+  .dens-state { font-size: var(--t-cap); -webkit-line-clamp: 2; }
+  .dens-help { display: none; }
+  .track { height: 46px; }
+  .slug { font-size: 0.58rem; letter-spacing: 0.2em; }
+  .hero-line { margin-bottom: var(--s-3); }
+  #insert { padding: 0 var(--s-2); }
+}
+
+@media (max-height: 620px) {
+  .hud-bottom { max-height: 56vh; }
+  .dens-state { -webkit-line-clamp: 2; }
+  .dens-help { display: none; }
+}
+
+/* ── reduced motion: every decorative movement stops, the sound does not ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .tubes, .spill, .spill-hot,
+  .cab.is-play .cab-screen, .cab.is-attract .cab-screen,
+  .fig.is-in .fig-body {
+    animation: none;
+  }
+  *, *::before, *::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

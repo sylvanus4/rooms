@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PC Bang 2004</title>
+<meta name="description" content="A Korean internet cafe at 2 in the morning, 2004. Pick a seat and the room remixes around you. Every sound is synthesized in the browser.">
+<meta name="theme-color" content="#07090c">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://sylvanus4.github.io/pcbang-2004/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="PC Bang 2004">
+<meta property="og:description" content="A Korean internet cafe at 2 in the morning, 2004. Pick a seat and the room remixes around you.">
+<meta property="og:url" content="https://sylvanus4.github.io/pcbang-2004/">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c0f'/%3E%3Crect x='5' y='8' width='22' height='15' rx='3' fill='none' stroke='%23ffc27a' stroke-width='2'/%3E%3Crect x='13' y='24' width='6' height='2' fill='%23ffc27a'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="crt" id="crt">
+
+  <main class="screen" id="screen">
+
+    <!-- ── cold open ─────────────────────────────────────────────── -->
+    <section class="power" id="power" aria-labelledby="power-h">
+      <p class="eyebrow" data-i18n="standby"></p>
+      <h1 class="power__title" id="power-h" data-i18n="title"></h1>
+      <p class="power__line" data-i18n="hero"></p>
+      <button class="power__btn" id="power-btn" type="button">
+        <span class="power__glyph" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round">
+            <path d="M12 3.4v8.2"></path>
+            <path d="M6.4 6.6a7.6 7.6 0 1 0 11.2 0"></path>
+          </svg>
+        </span>
+        <span class="power__label" data-i18n="powerOn"></span>
+      </button>
+      <p class="power__hint" data-i18n="powerHint"></p>
+      <p class="power__fail" id="power-fail" role="alert" hidden></p>
+    </section>
+
+    <!-- ── power-on sequence ─────────────────────────────────────── -->
+    <div class="boot" id="boot" hidden aria-hidden="true">
+      <div class="boot__raster" id="boot-raster"></div>
+      <pre class="boot__lines" id="boot-lines"></pre>
+    </div>
+    <button class="boot__skip" id="boot-skip" type="button" hidden data-i18n="skip"></button>
+
+    <!-- ── the desktop shell ─────────────────────────────────────── -->
+    <div class="shell" id="shell" hidden>
+
+      <header class="brand">
+        <p class="brand__mark"><span class="brand__dot" aria-hidden="true"></span><span data-i18n="brand"></span></p>
+        <button class="lang" id="lang-btn" type="button"></button>
+      </header>
+
+      <div class="hero" id="hero">
+        <!-- the single h1 is moved here by app.js after boot -->
+        <p class="hero__line" data-i18n="hero"></p>
+      </div>
+
+      <aside class="ticket" id="ticket" aria-labelledby="ticket-h">
+        <p class="ticket__head" id="ticket-h"><span class="ticket__pip" aria-hidden="true"></span><span data-i18n="remaining"></span></p>
+        <p class="ticket__clock" id="clock" role="timer" aria-live="off">02:00:00</p>
+        <p class="ticket__note" id="ticket-note" data-i18n="prepaid"></p>
+        <button class="ticket__btn" id="add-time" type="button">
+          <span data-i18n="addTime"></span>
+          <span class="ticket__price" data-i18n="price"></span>
+        </button>
+      </aside>
+
+      <section class="map" aria-labelledby="map-h">
+        <h2 class="sec-h" id="map-h" data-i18n="seatHead"></h2>
+        <div class="map__plan" id="plan"></div>
+        <div class="seats" id="seats" role="group" aria-labelledby="map-h"></div>
+      </section>
+
+      <section class="rack" aria-labelledby="rack-h">
+        <h2 class="sec-h" id="rack-h" data-i18n="layerHead"></h2>
+        <div class="rack__list" id="layers"></div>
+      </section>
+
+      <section class="meter" aria-labelledby="meter-h">
+        <h2 class="sec-h sec-h--inline" id="meter-h" data-i18n="nowHead"></h2>
+        <p class="meter__text" id="now-playing" aria-live="polite"></p>
+      </section>
+
+      <footer class="foot">
+        <div class="foot__vol">
+          <button class="mute" id="mute-btn" type="button" aria-pressed="false">
+            <span class="mute__icon" id="mute-icon" aria-hidden="true"></span>
+            <span class="mute__label" id="mute-label"></span>
+          </button>
+          <label class="vol">
+            <span class="vol__label" data-i18n="volume"></span>
+            <input class="vol__input" id="vol" type="range" min="0" max="100" step="1" value="70">
+          </label>
+        </div>
+        <p class="foot__note"><span data-i18n="synthNote"></span> <a class="foot__link" href="https://sylvanus4.github.io" rel="noopener">sylvanus4</a></p>
+      </footer>
+
+    </div>
+  </main>
+
+  <!-- ── atmosphere, all non-interactive ───────────────────────── -->
+  <div class="fx fx--haze" aria-hidden="true"></div>
+  <div class="fx fx--scan" aria-hidden="true"></div>
+  <div class="fx fx--grain" aria-hidden="true"></div>
+  <div class="fx fx--fringe" aria-hidden="true"></div>
+  <div class="fx fx--flicker" aria-hidden="true"></div>
+  <div class="fx fx--glass" aria-hidden="true"></div>
+  <div class="fx fx--vignette" aria-hidden="true"></div>
+</div>
+
+<noscript>
+  <p class="noscript">This piece synthesizes its entire soundtrack at runtime, so it needs JavaScript. Nothing is loaded from a server.</p>
+</noscript>
+
+<script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

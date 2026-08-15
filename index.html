@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>여섯 개의 방</title>
+<meta name="description" content="1979년부터 2004년까지, 한국의 방 여섯 개. 모든 앰비언스는 브라우저에서 실시간 합성되고, 음악은 자체 GPU에서 생성됐습니다.">
+<meta property="og:title" content="여섯 개의 방">
+<meta property="og:description" content="1979년부터 2004년까지, 한국의 방 여섯 개. 소리로 들어가는 기억.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/css/rooms.css">
+</head>
+<body>
+
+<header class="hall">
+  <div class="hall__top">
+    <h1 class="hall__title">여섯 개의 방</h1>
+    <p class="hall__label" id="room-label">불러오는 중</p>
+  </div>
+  <nav>
+    <div class="tabs" id="room-tabs" role="tablist" aria-label="방 고르기"></div>
+  </nav>
+</header>
+
+<main class="room">
+  <iframe id="room-frame" title="방" allow="autoplay" loading="eager"></iframe>
+  <div class="pending" id="room-pending" hidden>
+    <p class="pending__year"></p>
+    <p class="pending__msg">이 방은 아직 짓는 중입니다.</p>
+  </div>
+</main>
+
+<footer class="colophon">
+  <p>
+    방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다 — 샘플 파일도, 녹음물도 없습니다.
+    음악 레이어만 <abbr title="MiniMax-Music3">MiniMax-Music3</abbr>로 자체 GPU에서 생성한 파일이며,
+    라이선스된 상업 녹음물은 여전히 한 곡도 쓰지 않았습니다.
+    각 방의 조성과 템포는 그 방의 소스코드에 이미 있던 주파수에서 가져왔습니다.
+    <a href="https://github.com/sylvanus4/rooms">소스</a>
+  </p>
+</footer>
+
+<script type="module" src="assets/js/rooms.js"></script>
+</body>
+</html>

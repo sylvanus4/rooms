@@ -1,0 +1,615 @@
+/* dabang-1979 - late afternoon, nicotine cast, one cold green.
+   One committed look. There is no theme toggle and there should not be. */
+
+:root {
+  /* Surfaces: tobacco brown warmed by low sun through a dirty window. */
+  --page:      #150c06;
+  --room-back: #2a1a10;
+  --room-mid:  #3d2513;
+  --room-lit:  #5b3618;
+
+  /* Ink and paper. */
+  --cream:     #f6e8ca;
+  --cream-dim: #d7c096;
+  --paper:     #e9d9b3;
+  --paper-2:   #dbc596;
+  --paper-3:   #cbb27f;
+  --ink:       #3a2413;
+  --ink-soft:  #6a4b2c;
+  --red-ink:   #9d2420;
+
+  /* Fittings. */
+  --amber:     #f0b45c;
+  --amber-hi:  #ffd79a;
+  --vinyl:     #7d1c1f;
+  --brass:     #c8963f;
+  --brass-dim: #8a6428;
+
+  /* The one thing in the room that is not warm. */
+  --eye:       #5ce39a;
+  --eye-dim:   #1d6b45;
+
+  /* Type. Two families, both local, chosen for warmth rather than novelty:
+     an old-style serif for anything printed, a monospace for the parts of
+     the slip that a rubber stamp or a machine would have set. */
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia,
+                  'AppleMyungjo', 'Nanum Myeongjo', Batang, serif;
+  --font-body: Georgia, 'Times New Roman', 'Apple SD Gothic Neo',
+               'Malgun Gothic', 'Nanum Myeongjo', serif;
+  --font-stamp: 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+
+  /* A rhythm, not a uniform pad. */
+  --s-1: 0.35rem;
+  --s-2: 0.7rem;
+  --s-3: 1.15rem;
+  --s-4: 1.9rem;
+  --s-5: 3.1rem;
+  --s-6: 5rem;
+
+  --r-sharp: 2px;
+  --r-soft: 9px;
+  --r-pill: 999px;
+
+  --t-fast: 140ms;
+  --t-mid: 320ms;
+  --t-slow: 900ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-paper: cubic-bezier(0.62, -0.2, 0.3, 1.24);
+  --ease-constant: cubic-bezier(0, 0, 1, 1);
+
+  --lift: 0 1px 0 rgba(255, 226, 176, 0.14), 0 10px 20px rgba(0, 0, 0, 0.42);
+  --lift-sm: 0 1px 0 rgba(255, 226, 176, 0.1), 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--page);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 0.9rem + 0.22vw, 1.06rem);
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+[hidden] { display: none !important; }
+
+/* ── the rail ─────────────────────────────────────────────────────── */
+
+.rail {
+  position: absolute;
+  inset: var(--s-3) var(--s-3) auto auto;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.rail-btn {
+  min-width: 46px;
+  min-height: 46px;
+  padding: 0 var(--s-2);
+  border: 1px solid var(--brass-dim);
+  border-radius: var(--r-sharp);
+  background: linear-gradient(180deg, rgba(58, 34, 16, 0.92), rgba(24, 14, 7, 0.92));
+  color: var(--amber-hi);
+  font-family: var(--font-stamp);
+  font-size: 0.76rem;
+  letter-spacing: 0.09em;
+  cursor: pointer;
+  box-shadow: var(--lift-sm);
+  transition: transform var(--t-fast) var(--ease-out-expo),
+              border-color var(--t-fast) var(--ease-out-soft),
+              color var(--t-fast) var(--ease-out-soft);
+}
+
+.rail-btn:hover { border-color: var(--brass); color: #fff2d6; transform: translateY(-1px); }
+.rail-btn:active { transform: translateY(1px) scale(0.98); }
+.rail-btn[aria-pressed="true"] { color: var(--eye); border-color: var(--eye-dim); }
+
+.ico {
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin: 0 auto;
+  background: currentColor;
+  clip-path: polygon(0 34%, 32% 34%, 62% 6%, 62% 94%, 32% 66%, 0 66%);
+}
+.rail-btn[aria-pressed="true"] .ico {
+  clip-path: polygon(0 34%, 32% 34%, 62% 6%, 62% 94%, 32% 66%, 0 66%, 0 34%,
+                     74% 30%, 78% 26%, 100% 48%, 96% 52%);
+}
+
+.vol {
+  position: relative;
+  width: 106px;
+  height: 46px;
+  padding: 20px 0;
+  border: 1px solid var(--brass-dim);
+  border-radius: var(--r-sharp);
+  background: linear-gradient(180deg, rgba(58, 34, 16, 0.92), rgba(24, 14, 7, 0.92));
+  cursor: pointer;
+  box-shadow: var(--lift-sm);
+  touch-action: none;
+}
+.vol::before {
+  content: "";
+  position: absolute;
+  inset: 20px 8px;
+  background: #120a05;
+  border-radius: var(--r-pill);
+}
+.vol-fill {
+  position: absolute;
+  inset: 20px 8px auto 8px;
+  height: 6px;
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--brass-dim), var(--amber));
+  border-radius: var(--r-pill);
+  transition: transform var(--t-fast) var(--ease-out-soft);
+}
+
+:focus-visible {
+  outline: 3px solid var(--eye);
+  outline-offset: 3px;
+}
+
+/* ── the door ─────────────────────────────────────────────────────── */
+
+.cover {
+  position: relative;
+  min-height: 100dvh;
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: var(--s-2);
+  padding: var(--s-6) clamp(1.1rem, 6vw, 7rem) var(--s-5);
+  background:
+    radial-gradient(120% 90% at 14% 8%, rgba(255, 186, 92, 0.3), transparent 58%),
+    radial-gradient(80% 70% at 88% 96%, rgba(125, 28, 31, 0.34), transparent 62%),
+    linear-gradient(168deg, var(--room-mid), var(--page) 68%);
+}
+.cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(101deg,
+    rgba(255, 205, 130, 0.045) 0 3px, transparent 3px 9px);
+}
+
+.cover-year {
+  margin: 0;
+  font-family: var(--font-stamp);
+  font-size: 0.82rem;
+  letter-spacing: 0.72em;
+  color: var(--amber);
+  text-transform: uppercase;
+}
+
+.cover-title {
+  margin: 0 0 var(--s-1);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3.6rem, 15vw, 11rem);
+  line-height: 0.82;
+  letter-spacing: -0.03em;
+  color: var(--amber-hi);
+  text-shadow: 0 0 60px rgba(255, 176, 74, 0.28);
+}
+
+.cover-hero {
+  margin: 0;
+  max-width: 30ch;
+  font-size: clamp(1.15rem, 0.95rem + 1.1vw, 1.75rem);
+  line-height: 1.42;
+  color: var(--cream);
+  text-wrap: balance;
+}
+
+.begin {
+  margin-top: var(--s-3);
+  min-height: 60px;
+  padding: 0 var(--s-4);
+  border: 1px solid var(--brass);
+  border-radius: var(--r-sharp);
+  background: linear-gradient(180deg, #6d4118, #3a2010);
+  color: var(--amber-hi);
+  font-family: var(--font-stamp);
+  font-size: 0.88rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: var(--lift);
+  transition: transform var(--t-mid) var(--ease-out-expo),
+              box-shadow var(--t-mid) var(--ease-out-expo),
+              background-color var(--t-mid) var(--ease-out-soft);
+}
+.begin:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5); }
+.begin:active { transform: translateY(0) scale(0.985); }
+
+.cover-note {
+  margin: var(--s-2) 0 0;
+  max-width: 46ch;
+  color: var(--cream-dim);
+  font-size: 0.92rem;
+}
+.cover-warn {
+  margin: 0;
+  max-width: 46ch;
+  padding: var(--s-2) var(--s-3);
+  border-left: 3px solid var(--red-ink);
+  background: rgba(157, 36, 32, 0.16);
+  color: #ffd9c9;
+}
+
+/* ── the room ─────────────────────────────────────────────────────── */
+
+.room { position: relative; min-height: 100dvh; }
+
+.scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.haze { animation: drift 74s var(--ease-constant) infinite; transform-origin: 50% 50%; }
+.shafts { animation: breathe 19s var(--ease-out-soft) infinite; }
+.disc { animation: spin 1.81s var(--ease-constant) infinite; }
+
+@keyframes drift {
+  0%   { transform: translate3d(-3%, 1%, 0) scale(1.02); }
+  50%  { transform: translate3d(4%, -2%, 0) scale(1.08); }
+  100% { transform: translate3d(-3%, 1%, 0) scale(1.02); }
+}
+@keyframes breathe {
+  0%, 100% { opacity: 0.42; }
+  50%      { opacity: 0.58; }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Three columns, and the middle one is deliberately empty. The DJ box has to
+   stay visible between the slip and the readout, otherwise "put it in the box"
+   is an instruction about something you cannot see. */
+.stage {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: minmax(0, 430px) minmax(40px, 1fr) minmax(0, 302px);
+  align-items: start;
+  gap: var(--s-3);
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: clamp(4.4rem, 8vh, 6rem) clamp(1rem, 4vw, 3.4rem) var(--s-6);
+}
+
+/* ── the slip: the hero object ────────────────────────────────────── */
+
+/* Explicit placement, not auto-flow. Auto-placement put the readout in row 2
+   because the caption line had already advanced the cursor, which dropped the
+   whole right column below the fold on a 900 px tall window. */
+.slip { grid-column: 1; grid-row: 1; }
+.booth-line { grid-column: 1; grid-row: 2; }
+/* The readouts are one grid item, so their height is their own and not the
+   slip's. Placed as two rows they inherited the slip's row height and the
+   second panel fell off the bottom of a 900 px window. */
+.readouts {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  display: grid;
+  align-content: start;
+  gap: var(--s-3);
+}
+
+.slip {
+  position: relative;
+  padding: var(--s-4) clamp(1.1rem, 3.4vw, 2rem) var(--s-3);
+  color: var(--ink);
+  background:
+    repeating-linear-gradient(180deg,
+      transparent 0 33px, rgba(58, 36, 19, 0.11) 33px 34px),
+    radial-gradient(120% 60% at 12% 0%, rgba(255, 255, 255, 0.5), transparent 60%),
+    linear-gradient(172deg, var(--paper), var(--paper-2) 62%, var(--paper-3));
+  transform: rotate(-0.9deg);
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.58));
+  clip-path: polygon(
+    0% 1.6%, 6% 0.4%, 12% 1.8%, 19% 0.5%, 26% 1.9%, 34% 0.6%, 42% 1.8%, 50% 0.4%,
+    58% 1.7%, 66% 0.6%, 74% 1.9%, 82% 0.5%, 90% 1.7%, 96% 0.6%, 100% 1.8%,
+    100% 98.2%, 94% 99.4%, 87% 98.1%, 79% 99.5%, 71% 98.2%, 62% 99.4%, 53% 98.0%,
+    44% 99.5%, 35% 98.2%, 26% 99.3%, 17% 98.0%, 9% 99.4%, 3% 98.2%, 0% 99.3%);
+  transition: transform var(--t-slow) var(--ease-paper),
+              opacity var(--t-slow) var(--ease-out-expo);
+}
+.slip.sending {
+  transform: translate3d(14vw, -46vh, 0) rotate(11deg) scale(0.34);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.slip-top {
+  position: absolute;
+  inset: 14px 0 auto 0;
+  height: 7px;
+  background: var(--red-ink);
+  opacity: 0.62;
+}
+.slip-bottom {
+  margin-top: var(--s-3);
+  border-top: 2px dashed rgba(58, 36, 19, 0.4);
+}
+
+.slip-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--s-1);
+}
+.slip-h {
+  margin: 0;
+  font-family: var(--font-stamp);
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: 0.38em;
+  color: var(--red-ink);
+}
+.slip-sub {
+  margin: 0;
+  font-family: var(--font-stamp);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+}
+.slip-hint {
+  margin: 0 0 var(--s-3);
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.row { margin-bottom: var(--s-3); }
+
+.q {
+  margin: 0 0 var(--s-1);
+  font-family: var(--font-stamp);
+  font-size: 0.7rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 4px 12px 4px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sharp);
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.97rem;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  transition: background-color var(--t-fast) var(--ease-out-soft),
+              border-color var(--t-fast) var(--ease-out-soft),
+              transform var(--t-fast) var(--ease-out-expo);
+}
+.chip::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid var(--ink-soft);
+  border-radius: 50%;
+  background: transparent;
+  transition: background-color var(--t-fast) var(--ease-out-soft),
+              box-shadow var(--t-fast) var(--ease-out-soft);
+}
+.chip:hover { background: rgba(58, 36, 19, 0.08); border-color: rgba(58, 36, 19, 0.22); }
+.chip:active { transform: scale(0.98); }
+.chip[aria-checked="true"] {
+  border-color: rgba(157, 36, 32, 0.5);
+  background: rgba(157, 36, 32, 0.1);
+}
+.chip[aria-checked="true"]::before {
+  background: var(--red-ink);
+  box-shadow: inset 0 0 0 2.5px var(--paper);
+}
+
+.send {
+  width: 100%;
+  min-height: 54px;
+  margin-top: var(--s-2);
+  border: 2px solid var(--red-ink);
+  border-radius: var(--r-sharp);
+  background: transparent;
+  color: var(--red-ink);
+  font-family: var(--font-stamp);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  transition: background-color var(--t-mid) var(--ease-out-expo),
+              color var(--t-mid) var(--ease-out-expo),
+              transform var(--t-fast) var(--ease-out-expo);
+}
+.send:hover { background: var(--red-ink); color: var(--paper); }
+.send:active { transform: scale(0.99); }
+.send[disabled] { opacity: 0.42; cursor: default; }
+
+/* ── captions and readouts ────────────────────────────────────────── */
+
+.booth-line {
+  margin: var(--s-3) 0 0;
+  min-height: 1.6em;
+  padding-left: var(--s-3);
+  border-left: 2px solid var(--eye-dim);
+  color: var(--amber-hi);
+  font-size: 0.98rem;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.8);
+}
+
+.booth-line:empty { border-left-color: transparent; }
+
+.now, .legend {
+  padding: var(--s-3) var(--s-3) var(--s-4);
+  border: 1px solid rgba(200, 150, 63, 0.34);
+  border-radius: var(--r-soft);
+  background: linear-gradient(170deg, rgba(42, 26, 16, 0.9), rgba(15, 9, 5, 0.92));
+  backdrop-filter: blur(3px);
+  box-shadow: var(--lift);
+}
+.legend { margin-top: 0; }
+
+.now-h, .legend-h {
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-stamp);
+  font-size: 0.7rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+.now-for {
+  margin: 0 0 var(--s-1);
+  font-family: var(--font-display);
+  font-size: clamp(1.02rem, 0.94rem + 0.32vw, 1.24rem);
+  line-height: 1.34;
+  color: var(--amber-hi);
+  text-wrap: pretty;
+}
+.now-tempo {
+  margin: 0 0 var(--s-3);
+  font-family: var(--font-stamp);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  color: var(--cream-dim);
+}
+
+.meters { margin: 0 0 var(--s-3); padding: 0; list-style: none; }
+.meters li {
+  display: grid;
+  grid-template-columns: 1fr 62px;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(200, 150, 63, 0.14);
+  font-size: 0.82rem;
+  color: var(--cream);
+}
+.bar {
+  position: relative;
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 214, 150, 0.14);
+  overflow: hidden;
+}
+.bar span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 100%;
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--brass-dim), var(--amber-hi));
+  transition: transform var(--t-slow) var(--ease-out-expo);
+}
+
+.legend p { margin: 0 0 var(--s-2); font-size: 0.82rem; color: var(--cream-dim); }
+.legend p:last-child { margin-bottom: 0; }
+
+.again {
+  min-height: 48px;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--brass-dim);
+  border-radius: var(--r-sharp);
+  background: transparent;
+  color: var(--amber-hi);
+  font-family: var(--font-stamp);
+  font-size: 0.76rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  transition: border-color var(--t-fast) var(--ease-out-soft),
+              transform var(--t-fast) var(--ease-out-expo);
+}
+.again:hover { border-color: var(--brass); transform: translateY(-1px); }
+
+/* ── footer ───────────────────────────────────────────────────────── */
+
+.foot {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-3);
+  justify-content: space-between;
+  padding: var(--s-3) clamp(1rem, 4vw, 3.4rem) var(--s-4);
+  font-family: var(--font-stamp);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--cream-dim);
+}
+.foot a { color: var(--brass); text-underline-offset: 4px; }
+.foot a:hover { color: var(--amber-hi); }
+
+/* ── narrow: the slip stays the hero, the readouts stack under it ─── */
+
+@media (max-width: 900px) {
+  .stage { grid-template-columns: minmax(0, 1fr); }
+  .slip, .booth-line, .readouts { grid-column: 1; grid-row: auto; }
+  .slip { transform: rotate(-0.5deg); }
+}
+
+/* Four answers on four lines makes the slip taller than any phone. Two
+   columns halves it, which is what leaves room for the room. */
+@media (max-width: 900px) {
+  .chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+  .chip { min-height: 44px; padding: 4px 8px 4px 6px; }
+  .row { margin-bottom: var(--s-2); }
+}
+
+/* True portrait: the slip starts below the fold line the DJ box sits above,
+   so a phone still shows you the box you are putting the slip into. */
+@media (max-aspect-ratio: 3/4) {
+  .stage { padding-top: clamp(16rem, 33vh, 22rem); }
+  .slip { transform: rotate(-0.4deg); }
+}
+
+@media (max-width: 420px) {
+  .rail { inset: var(--s-2) var(--s-2) auto auto; }
+  .vol { width: 76px; }
+  .cover { padding-top: 6.6rem; }
+  .slip { padding-left: 0.9rem; padding-right: 0.9rem; }
+  .chip { font-size: 0.92rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .haze, .shafts, .disc { animation: none; }
+  .slip, .slip.sending, .bar span, .vol-fill,
+  .rail-btn, .begin, .chip, .send, .again {
+    transition-duration: 1ms;
+  }
+  .slip.sending { transform: rotate(-0.9deg) scale(0.98); }
+}

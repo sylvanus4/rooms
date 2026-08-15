@@ -1,0 +1,263 @@
+/* Six rooms, one hallway.
+   The hallway is deliberately dark and almost empty: every room inside has a
+   strong palette of its own, and chrome that competes with them makes all six
+   look worse. Only the active room's hue is allowed to leak into the frame. */
+
+:root {
+  --room-hue: 210;
+
+  --ink:        oklch(13% 0.012 var(--room-hue));
+  --ink-deep:   oklch(9%  0.014 var(--room-hue));
+  --paper:      oklch(93% 0.008 var(--room-hue));
+  --paper-dim:  oklch(68% 0.012 var(--room-hue));
+  --paper-faint:oklch(48% 0.012 var(--room-hue));
+  --accent:     oklch(72% 0.14  var(--room-hue));
+  --hairline:   oklch(26% 0.015 var(--room-hue));
+
+  --tab-hue: var(--room-hue);
+
+  --text-year:  clamp(0.62rem, 0.58rem + 0.12vw, 0.72rem);
+  --text-name:  clamp(0.9rem, 0.84rem + 0.28vw, 1.05rem);
+  --text-label: clamp(0.72rem, 0.68rem + 0.16vw, 0.82rem);
+
+  --space-gutter: clamp(0.75rem, 0.4rem + 1.4vw, 1.75rem);
+
+  --duration-fast:   140ms;
+  --duration-normal: 320ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background: var(--ink-deep);
+  color: var(--paper);
+  font-family: system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  /* the hue crossfade is what makes switching rooms feel like walking, not
+     clicking — it is the one piece of motion the hallway is allowed */
+  transition: background-color var(--duration-normal) var(--ease-out-expo);
+}
+
+/* ---------- hallway header ---------- */
+
+.hall {
+  padding: var(--space-gutter) var(--space-gutter) 0;
+  background:
+    radial-gradient(120% 100% at 50% 0%, var(--ink) 0%, var(--ink-deep) 70%);
+  border-bottom: 1px solid var(--hairline);
+  transition: background-color var(--duration-normal) var(--ease-out-expo);
+}
+
+.hall__top {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.7rem;
+}
+
+.hall__title {
+  font-size: var(--text-name);
+  font-weight: 620;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.hall__label {
+  font-size: var(--text-label);
+  color: var(--paper-dim);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--duration-normal) var(--ease-out-expo);
+}
+
+/* ---------- the six doors ---------- */
+
+.tabs {
+  display: flex;
+  gap: 0.15rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-bottom: -1px;
+  /* On a phone the sixth door sits past the right edge with the scrollbar
+     hidden, so nothing says it is there. Fade the trailing edge to admit the
+     strip continues; the mask retracts once you have scrolled to the end. */
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2.2rem), transparent);
+          mask-image: linear-gradient(to right, #000 calc(100% - 2.2rem), transparent);
+}
+.tabs[data-scroll-end="1"] {
+  -webkit-mask-image: none;
+          mask-image: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+.tabs button {
+  --tab-accent: oklch(72% 0.14 var(--tab-hue));
+
+  position: relative;
+  flex: 0 0 auto;
+  display: grid;
+  gap: 0.1rem;
+  justify-items: start;
+  min-height: 44px;
+  padding: 0.45rem 0.95rem 0.6rem;
+  border: 0;
+  border-radius: 0.4rem 0.4rem 0 0;
+  background: transparent;
+  color: var(--paper-faint);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-out-expo),
+    background-color var(--duration-fast) var(--ease-out-expo),
+    transform var(--duration-fast) var(--ease-spring);
+}
+
+.tabs button::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0.55rem;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--tab-accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--duration-normal) var(--ease-out-expo);
+}
+
+.tab__year {
+  font-size: var(--text-year);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.09em;
+  opacity: 0.72;
+}
+
+.tab__name {
+  font-size: var(--text-name);
+  font-weight: 560;
+  letter-spacing: -0.005em;
+}
+
+.tabs button:hover {
+  color: var(--paper);
+  background: color-mix(in oklch, var(--tab-accent) 9%, transparent);
+}
+.tabs button:hover::after { transform: scaleX(0.35); }
+
+.tabs button:active { transform: translateY(1px); }
+
+.tabs button:focus-visible {
+  outline: 2px solid var(--tab-accent);
+  outline-offset: -2px;
+}
+
+.tabs button[aria-selected="true"] {
+  color: var(--paper);
+  background: color-mix(in oklch, var(--tab-accent) 13%, transparent);
+}
+.tabs button[aria-selected="true"]::after { transform: scaleX(1); }
+
+/* ---------- the room itself ---------- */
+
+.room {
+  position: relative;
+  min-height: 0;          /* lets the frame shrink inside the grid row */
+  background: var(--ink);
+  transition: background-color var(--duration-normal) var(--ease-out-expo);
+}
+
+.room::after {
+  /* a soft inner edge so the room reads as recessed rather than pasted on */
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 8px 22px -14px oklch(0% 0 0 / 0.85);
+}
+
+#room-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--ink);
+}
+
+/* ---------- footer ---------- */
+
+.colophon {
+  padding: 0.6rem var(--space-gutter) 0.85rem;
+  border-top: 1px solid var(--hairline);
+  font-size: var(--text-year);
+  line-height: 1.6;
+  color: var(--paper-faint);
+}
+
+.colophon a {
+  color: var(--paper-dim);
+  text-decoration-color: color-mix(in oklch, currentColor 40%, transparent);
+  text-underline-offset: 0.2em;
+  transition: color var(--duration-fast) var(--ease-out-expo);
+}
+.colophon a:hover { color: var(--accent); }
+.colophon a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (max-width: 30rem) {
+  /* The colophon is a licensing statement, so it is not getting truncated —
+     but it should not eat a tenth of a phone screen either. Tighter, not shorter. */
+  .colophon {
+    padding: 0.45rem var(--space-gutter) 0.6rem;
+    font-size: 0.66rem;
+    line-height: 1.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::after { transition-duration: 1ms !important; }
+}
+
+/* ---------- a room that is not built yet ---------- */
+
+/* An author `display` rule outranks the UA stylesheet's [hidden] { display:none },
+   so anything given a display here would keep rendering while "hidden". That bit
+   the pending panel: its text showed through the middle of a loaded room. Guard
+   it once, globally, rather than per-component. */
+[hidden] { display: none !important; }
+
+.pending {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.5rem;
+  padding: var(--space-gutter);
+  text-align: center;
+}
+
+.pending__year {
+  margin: 0;
+  font-size: clamp(1.4rem, 1rem + 2.2vw, 2.6rem);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--paper);
+}
+
+.pending__msg {
+  margin: 0;
+  font-size: var(--text-label);
+  color: var(--paper-faint);
+}
