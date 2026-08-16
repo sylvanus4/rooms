@@ -50,8 +50,8 @@ export const STRINGS = {
                   ko: "도착했습니다. 초인종, 계단, 그리고 예전 같지 않은 테이프." },
 
   hearTitle:    { en: "What you are listening to", ko: "지금 들리는 것" },
-  hearTape:     { en: "A ballad in C sharp minor at 68 BPM on side A, dance pop at 124 BPM on side B. Piano, string pad, clean guitar, drums, a wordless voice.",
-                  ko: "A면은 68 BPM 올림다단조 발라드, B면은 124 BPM 댄스 팝입니다. 피아노, 스트링 패드, 클린 기타, 드럼, 가사 없는 보컬." },
+  hearTape:     { en: "A ballad in C sharp minor at 68 BPM on side A, dance pop at 124 BPM on side B. Piano, string pad, clean guitar, drums, an overdriven guitar taking the melody.",
+                  ko: "A면은 68 BPM 올림다단조 발라드, B면은 124 BPM 댄스 팝입니다. 피아노, 스트링 패드, 클린 기타, 드럼, 그리고 멜로디를 맡은 오버드라이브 기타." },
   hearTape2:    { en: "Under it: hiss, wow and flutter, dropouts, and the top end going away.",
                   ko: "그 아래로 히스 잡음, 회전 흔들림, 음 끊김, 그리고 사라지는 고음." },
   hearStreet:   { en: "Around it: footsteps on cold pavement, traffic, a bus, and a door buzzer at the end of the walk.",
@@ -60,8 +60,8 @@ export const STRINGS = {
   labelSide:    { en: "SIDE", ko: "SIDE" },
   labelHand1:   { en: "for the walk", ko: "가는 길에" },
   labelHand2:   { en: "97 winter", ko: "97 겨울" },
-  credit:       { en: "Synthesized in the browser. No audio files, no network.",
-                  ko: "브라우저에서 합성했습니다. 오디오 파일도, 네트워크도 없습니다." },
+  credit:       { en: "The tape deck and the street are synthesized live in the browser - no sample files, no recordings. Only the music layer is a file, generated on our own GPUs with MiniMax-Music3; no licensed commercial recording is used, and every track is instrumental.",
+                  ko: "방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다 - 샘플 파일도, 녹음물도 없습니다. 음악 레이어만 자체 GPU에서 MiniMax-Music3로 생성한 파일이며, 라이선스된 상업 녹음물은 한 곡도 쓰지 않았습니다. 모든 곡은 무보컬입니다." },
   creditLink:   { en: "More pieces", ko: "다른 작업" },
 };
 

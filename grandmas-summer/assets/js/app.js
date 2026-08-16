@@ -7,7 +7,7 @@
    ========================================================================== */
 
 import { tr, formatClock } from "./i18n.js";
-import { audio, densities } from "./audio.js";
+import { audio, densities, musicWeights } from "./audio.js";
 
 const MIN_T = 300;      /* 05:00 */
 const MAX_T = 1440;     /* 24:00 */
@@ -415,7 +415,8 @@ const LAYERS = [
   { id: "bird", key: "layerBird" },
   { id: "night", key: "layerNight" },
   { id: "tv", key: "layerTv" },
-  { id: "rain", key: "layerRain" }
+  { id: "rain", key: "layerRain" },
+  { id: "music", key: "layerMusic" }
 ];
 
 function buildLayers() {
@@ -525,7 +526,11 @@ function applyTime(pushAudio) {
 
 function updateLayers(hour, rain) {
   const d = densities(hour);
+  const mw = musicWeights(hour);
   const vals = {
+    /* the loudest of the three, so the bar dips through every crossfade
+       instead of sitting at one and telling you nothing */
+    music: Math.max(mw.noon, mw.dusk, mw.night),
     cicada: d.cicada * (1 - 0.9 * rain),
     fan: state.fan ? 0.9 : 0,
     chime: d.chime * 0.8,

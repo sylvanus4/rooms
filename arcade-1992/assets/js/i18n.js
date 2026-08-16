@@ -13,7 +13,7 @@ export const STRINGS = {
   },
   docDesc: {
     en: 'A neighbourhood arcade in Korea, 1992, rebuilt entirely from synthesized sound. Move one control and the room fills with people, and everything about it changes.',
-    ko: '1992년 동네 오락실을 소리로 다시 지었습니다. 오디오 파일 없이 전부 실시간 합성이며, 사람 수 하나만 움직이면 방 전체가 달라집니다.',
+    ko: '1992년 동네 오락실을 소리로 다시 지었습니다. 앰비언스는 전부 실시간 합성이고 음악만 생성한 파일이며, 사람 수 하나만 움직이면 방 전체가 달라집니다.',
   },
 
   eyebrow: {
@@ -94,6 +94,11 @@ export const STRINGS = {
     en: 'the roller rink through the ceiling, A minor at 128 BPM, wheels on wood, a whistle',
     ko: '천장 너머 롤러장, A 단조 128 BPM, 나무 바닥 위 바퀴, 호루라기',
   },
+  layMusic: { en: 'Music', ko: '음악' },
+  layMusicNote: {
+    en: 'an empty room hears the rink upstairs, a full one hears the cabinet everyone is round',
+    ko: '텅 빈 방에서는 위층 롤러장이, 꽉 찬 방에서는 사람들이 둘러싼 기계가 들립니다',
+  },
   layOn: { en: 'on', ko: '켜짐' },
   layOff: { en: 'off', ko: '꺼짐' },
 
@@ -117,8 +122,8 @@ export const STRINGS = {
   },
 
   credit: {
-    en: 'Every sound here is synthesized in the browser. No recordings, no audio files, no network.',
-    ko: '여기 나오는 모든 소리는 브라우저가 실시간으로 합성합니다. 녹음도, 오디오 파일도, 네트워크도 없습니다.',
+    en: 'The room is synthesized live in the browser - no sample files, no recordings. Only the music layer is a file, generated on our own GPUs with MiniMax-Music3; no licensed commercial recording is used, and every track is instrumental.',
+    ko: '방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다 - 샘플 파일도, 녹음물도 없습니다. 음악 레이어만 자체 GPU에서 MiniMax-Music3로 생성한 파일이며, 라이선스된 상업 녹음물은 한 곡도 쓰지 않았습니다. 모든 곡은 무보컬입니다.',
   },
   by: { en: 'Built by Hyojung Han', ko: '만든 사람 한효정' },
 };

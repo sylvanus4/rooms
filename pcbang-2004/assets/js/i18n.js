@@ -82,6 +82,11 @@ export const T = {
     en: 'About 15.7 kHz. Plenty of people cannot hear it, and some find it painful. Off by default.',
     ko: '약 15.7kHz입니다. 들리지 않는 사람도 많고, 거슬리는 사람도 있습니다. 기본은 꺼짐입니다.',
   },
+  layerMusic: { en: 'Music',                      ko: '음악' },
+  layerMusicNote: {
+    en: 'Whatever is playing where you are sitting: the ceiling by the door, your own headset, or the radio behind the counter.',
+    ko: '앉은 자리에서 들리는 음악입니다. 문 쪽 천장 스피커, 내 헤드셋, 아니면 카운터 뒤의 라디오.',
+  },
   layerFluo:  { en: 'Fluorescent',                ko: '형광등' },
   layerFluoNote: {
     en: '120 Hz and its harmonics. The picture dims with it.',
@@ -121,8 +126,8 @@ export const T = {
   planDoor:   { en: 'DOOR',                       ko: '출입구' },
 
   synthNote: {
-    en: 'Every sound here is synthesized in the browser. No recordings, no samples. Built by',
-    ko: '여기 나오는 모든 소리는 브라우저에서 합성됩니다. 녹음도 샘플도 쓰지 않았습니다. 만든 사람은',
+    en: 'The room is synthesized live in the browser - no sample files, no recordings. Only the music layer is a file, generated on our own GPUs with MiniMax-Music3; no licensed commercial recording is used, and every track is instrumental. Built by',
+    ko: '방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다 - 샘플 파일도, 녹음물도 없습니다. 음악 레이어만 자체 GPU에서 MiniMax-Music3로 생성한 파일이며, 라이선스된 상업 녹음물은 한 곡도 쓰지 않았습니다. 모든 곡은 무보컬입니다. 만든 사람은',
   },
 
   langSwitch: { en: '한국어',                      ko: 'English' },

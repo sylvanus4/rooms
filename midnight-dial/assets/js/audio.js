@@ -4,7 +4,9 @@
  * Everything you hear is generated at runtime: oscillators, noise written into
  * AudioBuffers, biquad filters, delay lines, and a convolution reverb whose
  * impulse response is synthesised from decaying stereo-decorrelated noise.
- * There is not a single recorded sample in this project.
+ * There is not a single recorded sample in this project. Three of the nine
+ * stations carry a generated track instead of a synthesised programme; they
+ * are played through room-music.js on the receiver's own front end.
  *
  * Signal flow
  *   stations ─┬─> stationBus ─┬─> analyser        (signal meter tap)
@@ -20,6 +22,8 @@
  * above the audible floor and disposed 1.2 s after it falls back to silence,
  * so at most two graphs exist at once (during a crossfade) and usually one.
  */
+
+import { RoomMusic, SLOT_MEDIUM } from './room-music.js';
 
 /* ------------------------------------------------------------------ */
 /* Band plan                                                           */
@@ -38,15 +42,34 @@ const FADE_WIDTH = 0.86;
  * percentile level, which is the figure that decides whether landing on a
  * station feels like a jump scare. Matching on mean would have made the sparse
  * stations far too loud in the moments they actually play.
+ *
+ * Three of these carry a track instead of a synthesised programme. They are
+ * stations like any other: they sit at their own frequency, the needle is
+ * magnetised toward them, the mark lights up as you arrive, and between them
+ * you get the same interstation noise as everywhere else on the band. Tuning
+ * has to *find* them — nothing here plays a track because a button was pressed.
+ *
+ * The frequencies are the three widest gaps left in the band. Each is at least
+ * 1.6 MHz from its neighbours, which is past FADE_WIDTH on both sides, so there
+ * is real static between every pair rather than two programmes bleeding into
+ * one another.
  */
 export const STATIONS = [
   { id: 'music', freq: 89.1, stereo: true, trim: 3.0, build: buildMusicRoom },
   { id: 'rain', freq: 91.9, stereo: true, trim: 1.4, build: buildRain },
+  { id: 'signal', freq: 93.9, stereo: true, trim: 1, track: 'signal' },
   { id: 'ballad', freq: 95.9, stereo: true, trim: 1.25, build: buildBallad },
   { id: 'highway', freq: 98.7, stereo: true, trim: 0.9, build: buildHighway },
   { id: 'shortwave', freq: 101.3, stereo: false, trim: 1.6, build: buildShortwave },
+  { id: 'letter', freq: 102.9, stereo: true, trim: 1, track: 'letter' },
   { id: 'fouram', freq: 104.5, stereo: true, trim: 0.26, build: buildFourAM },
+  { id: 'closing', freq: 106.3, stereo: true, trim: 1, track: 'closing' },
 ];
+
+/** The three that are files. Same medium: it is one receiver. */
+export const MUSIC_STATIONS = STATIONS.filter((s) => s.track);
+/* Set against the trims above, which were measured through the analyser tap. */
+const MUSIC_TOP = 0.42;
 
 /* ------------------------------------------------------------------ */
 /* Small helpers                                                       */
@@ -736,6 +759,7 @@ export class Receiver {
     if (this.ctx.state !== 'running') return false;
 
     if (!this.bus) this._buildMaster();
+    if (!this.music) this._buildMusic();
     this.running = true;
 
     // Fade the master up rather than switching it on, so nothing clicks.
@@ -761,6 +785,11 @@ export class Receiver {
     this.master.gain.cancelScheduledValues(now);
     this.master.gain.setValueAtTime(this.master.gain.value, now);
     this.master.gain.linearRampToValueAtTime(0.0001, now + 0.28);
+    // Power off has to stop the elements too, not just fade the master, or a
+    // track would keep running silently behind a receiver that is switched off.
+    for (const k in (this.music || {})) {
+      if (this.music[k]) this.music[k].stop({ fade: 0.25 });
+    }
     // Tear everything down after the fade completes, never during it, and
     // never if the listener has already switched the receiver back on.
     setTimeout(() => {
@@ -839,6 +868,25 @@ export class Receiver {
     };
   }
 
+  /* Into the station bus, so the signal meter reads a track exactly as it
+   * reads a synthesised programme, and into the short room the same way.
+   * These are receiver-side, not station-side: one receiver, one front end.
+   */
+  _buildMusic() {
+    this.music = {};
+    for (const meta of MUSIC_STATIONS) {
+      this.music[meta.track] = new RoomMusic(this.ctx, {
+        profile: SLOT_MEDIUM[`midnight-dial__${meta.track}`],
+        destination: this.stationBus,
+        reverbSend: this.revShort,
+      });
+    }
+    Promise.all(MUSIC_STATIONS.map((meta) => this.music[meta.track]
+      .load(`assets/audio/${meta.track}.mp3`)
+      .catch(() => { this.music[meta.track] = null; })))
+      .then(() => { this.musicReady = true; this.tune(this._freq); });
+  }
+
   /** Interstation noise plus the heterodyne whistle at the edge of lock. */
   _startStatic() {
     const ctx = this.ctx;
@@ -898,6 +946,23 @@ export class Receiver {
       if (e > edge) {
         edge = e;
         this._edgeStation = meta;
+      }
+
+      // A station carrying a track is tuned the same way, it just does not
+      // have a graph to build and tear down: the element stays, the fader
+      // moves with the signal, and it pauses once it is out of range.
+      if (meta.track) {
+        const m = this.music && this.music[meta.track];
+        if (m) {
+          const g = sig * MUSIC_TOP;
+          if (g > 0.004) {
+            clearTimeout(m._pauseTimer);
+            m.play({ level: g, fade: 0.45 });
+          } else if (m.playing) {
+            m.stop({ fade: 0.5 });
+          }
+        }
+        continue;
       }
 
       const entry = this._alive.get(meta.id);

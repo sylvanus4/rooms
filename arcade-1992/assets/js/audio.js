@@ -1,7 +1,8 @@
 /**
  * The Arcade, 1992 - room synthesis.
  *
- * Nothing is sampled. Every sound is built from oscillators, noise written by
+ * Nothing is sampled. Every sound but the three music tracks, which are generated
+ * files played through room-music.js, is built from oscillators, noise written by
  * hand into an AudioBuffer, biquad filters and scheduled envelopes. The cabinet
  * music is real two operator FM in the manner of the Yamaha OPM arcade chip:
  * a modulator oscillator drives the carrier's frequency AudioParam, and the
@@ -97,6 +98,25 @@ const LOOPS = [
 /* Eight cabinets against the wall. `cut` and `send` are the distance: a machine
  * across the room loses its top end and gains reverb, which is what actually
  * reads as far away. Volume alone never does.                                */
+import { RoomMusic, SLOT_MEDIUM } from './room-music.js';
+
+/**
+ * Three tracks, and the crowd decides which one you are hearing.
+ *
+ * An empty arcade is exactly when the roller rink on the floor above is
+ * audible — there is nothing down here to cover it — so `rink` sits at the
+ * empty end and comes through the ceiling. Fill the room and the cabinets
+ * bury it: the middle is the attract-loop music of the machines themselves,
+ * and the packed end is the cabinet everyone has gathered around. The centres
+ * overlap by design, so the three crossfade past each other instead of
+ * switching at a threshold.
+ */
+const MUSIC_SLOTS = ['rink', 'coin', 'versus'];
+const MUSIC_CENTRE = { rink: 0.06, coin: 0.48, versus: 0.92 };
+const MUSIC_SPAN = 0.5;
+/* Trimmed against the same 0.09-0.20 destination RMS window the bus is. */
+const MUSIC_TOP = 0.42;
+
 export const CABINETS = [
   { loop: 0, pan: -0.88, cut: 8600, send: 0.14, tune: 0,  level: 0.95 },
   { loop: 2, pan: -0.68, cut: 6200, send: 0.22, tune: 0,  level: 0.86 },
@@ -197,7 +217,8 @@ export class Arcade {
     this.density = 0.45;
     this.volume = 0.7;
     this.muted = false;
-    this.on = { cabinets: true, crowd: true, coins: true, machines: true, upstairs: true };
+    this.on = { cabinets: true, crowd: true, coins: true, machines: true, upstairs: true, music: true };
+    this.musicReady = false;
     this.poweredFrac = 0.6;
     this._timers = [];
     this._nodes = [];
@@ -269,6 +290,7 @@ export class Arcade {
     this._buildAir();
     this._buildCrowdBed();
     this._buildUpstairs();
+    this._buildMusic();
 
     this.applyMix(0.001);
     this.master.gain.setTargetAtTime(this.muted ? 0 : this.volume, ctx.currentTime, 0.6);
@@ -1038,6 +1060,59 @@ export class Arcade {
     this.longMix.gain.setTargetAtTime(Math.pow(1 - d, 1.25) * 1.15, now, tau);
     this.shortMix.gain.setTargetAtTime(0.22 + 0.78 * Math.pow(d, 0.7), now, tau);
     this.reverbReturn.gain.setTargetAtTime(1.15 - 0.66 * d, now, tau);
+
+    /* the three tracks ride the same control as everything else here */
+    this._applyMusic(Math.max(tau * 3, 1.4));
+  }
+
+  /* --- music ------------------------------------------------------------
+   * Two of the three come out of a cabinet speaker and one comes through the
+   * ceiling from the rink, which is why they do not share a medium. They join
+   * the same bus and the same two rooms as everything else, so the density
+   * control moves their reverb along with the arcade's.
+   */
+  _buildMusic() {
+    this.music = {};
+    for (const slot of MUSIC_SLOTS) {
+      this.music[slot] = new RoomMusic(this.ctx, {
+        profile: SLOT_MEDIUM[`arcade-1992__${slot}`],
+        destination: this.bus,
+        reverbSend: this.reverbIn,
+      });
+    }
+    Promise.all(MUSIC_SLOTS.map((slot) => this.music[slot]
+      .load(`assets/audio/${slot}.mp3`)
+      .catch(() => { this.music[slot] = null; })))
+      .then(() => { this.musicReady = true; this._applyMusic(2.4); });
+  }
+
+  /** Triangular weights around three centres: overlapping, never a hard cut. */
+  musicWeights(d = this.density) {
+    const raw = {};
+    let sum = 0;
+    for (const slot of MUSIC_SLOTS) {
+      const w = Math.max(0, 1 - Math.abs(d - MUSIC_CENTRE[slot]) / MUSIC_SPAN);
+      raw[slot] = w;
+      sum += w;
+    }
+    for (const slot of MUSIC_SLOTS) raw[slot] = sum > 0 ? raw[slot] / sum : 0;
+    return raw;
+  }
+
+  _applyMusic(fade = 2.0) {
+    if (!this.musicReady) return;
+    const w = this.musicWeights();
+    for (const slot of MUSIC_SLOTS) {
+      const m = this.music[slot];
+      if (!m) continue;
+      const g = this.on.music ? w[slot] * MUSIC_TOP : 0;
+      if (g > 0.004) {
+        clearTimeout(m._pauseTimer);   // a stop in flight would pause mid-fade
+        m.play({ level: g, fade });
+      } else if (m.playing) {
+        m.stop({ fade });
+      }
+    }
   }
 
   setDensity(d) {

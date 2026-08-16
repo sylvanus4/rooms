@@ -4,7 +4,9 @@
    Everything you hear is built here out of oscillators, noise written into
    AudioBuffers, biquad filters, LFOs and scheduled envelopes. There is not a
    single recorded sample in this project, which is both a licensing decision
-   and the interesting part of the build.
+   and the interesting part of the build. The one thing that is a file is the
+   music layer at the bottom of this file: three generated tracks, no licensed
+   commercial recording anywhere near them.
 
    Signal flow, top level:
 
@@ -26,6 +28,8 @@ const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const rnd = (a, b) => a + Math.random() * (b - a);
 const pick = (arr) => arr[(Math.random() * arr.length) | 0];
 
+import { RoomMusic, SLOT_MEDIUM } from "./room-music.js";
+
 /* smooth 0..1 ramp between two hours */
 function ramp(h, a, b) {
   if (a === b) return h >= b ? 1 : 0;
@@ -40,6 +44,32 @@ function windowed(h, a, b, c, d) {
 /* -------------------------------------------------------------------------- */
 /* density curves: the entire mix as a function of the hour of day            */
 /* -------------------------------------------------------------------------- */
+
+/**
+ * Three tracks, and the time of day decides which one is in the air.
+ *
+ * Nothing in a 1996 farmhouse yard was playing music, so these do not come out
+ * of a radio — inventing a device to justify a score would be a lie. They use
+ * the `remembered` medium instead: nearly flat, a little soft on top the way
+ * remembered sound is, and pushed deep into the yard's own reverb so they sit
+ * in the air rather than in front of you.
+ *
+ * The windows are built the same way every other bus in this file is, with
+ * plateaus and overlapping ramps, because this room's whole mechanic is that
+ * everything morphs. Scrub slowly across 17:00 and you are hearing both.
+ */
+const MUSIC_SLOTS = ['noon', 'dusk', 'night'];
+/* Kept low: it is a memory of music, not a radio someone switched on. */
+const MUSIC_TOP = 0.30;
+
+export function musicWeights(hour) {
+  const h = hour;
+  return {
+    noon: windowed(h, 0, 5, 15.5, 18.5),
+    dusk: windowed(h, 15.5, 18.5, 20.4, 22.2),
+    night: windowed(h, 20.4, 22.2, 26, 27),
+  };
+}
 
 export function densities(hour) {
   const h = hour;
@@ -75,6 +105,7 @@ class SummerAudio {
     this.crickets = [];
     this.oneShots = [];       /* end times of live one shot voices */
     this._timer = null;
+    this.musicReady = false;
   }
 
   /* Reserve a slot for a one shot voice. Expired entries are pruned on every
@@ -107,6 +138,7 @@ class SummerAudio {
     this._buildCrickets();
     this._buildTv();
     this._buildRain();
+    this._buildMusic();
 
     this.running = true;
     this.setTime(this.hour, true);
@@ -662,9 +694,44 @@ class SummerAudio {
 
   /* ---- public controls --------------------------------------------------- */
 
+  /* ---- the music in the air ---------------------------------------------
+     Into `sum` and into the same convolver every other bus uses, so the yard
+     is around the music rather than behind it.                              */
+  _buildMusic() {
+    this.music = {};
+    for (const slot of MUSIC_SLOTS) {
+      this.music[slot] = new RoomMusic(this.ctx, {
+        profile: SLOT_MEDIUM[`grandmas-summer__${slot}`],
+        destination: this.sum,
+        reverbSend: this.verb,
+      });
+    }
+    Promise.all(MUSIC_SLOTS.map((slot) => this.music[slot]
+      .load(`assets/audio/${slot}.mp3`)
+      .catch(() => { this.music[slot] = null; })))
+      .then(() => { this.musicReady = true; this._applyMusic(2.6); });
+  }
+
+  _applyMusic(fade = 1.6) {
+    if (!this.musicReady) return;
+    const w = musicWeights(this.hour);
+    for (const slot of MUSIC_SLOTS) {
+      const m = this.music[slot];
+      if (!m) continue;
+      const g = w[slot] * MUSIC_TOP;
+      if (g > 0.004) {
+        clearTimeout(m._pauseTimer);   /* a stop in flight would pause mid fade */
+        m.play({ level: g, fade });
+      } else if (m.playing) {
+        m.stop({ fade });
+      }
+    }
+  }
+
   setTime(hour, immediate) {
     this.hour = hour;
     if (!this.running) return;
+    this._applyMusic(immediate ? 0.6 : 1.6);
     const d = densities(hour);
     const now = this.ctx.currentTime;
     const tc = immediate ? 0.01 : 0.28;

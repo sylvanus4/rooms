@@ -1,11 +1,12 @@
 /**
  * audio.js - the synthesis engine for a tearoom in 1979.
  *
- * Nothing here is a recording. Every sound is written at runtime from
+ * Nothing here is a recording. Every sound but the record on the turntable,
+ * which is a generated file played through room-music.js, is written at runtime from
  * oscillators, noise rendered into AudioBuffers, biquad filters, a waveshaper
  * standing in for an output transformer, and a convolution reverb whose impulse
- * response is generated from decaying, stereo-decorrelated noise. There is no
- * network request and no audio file in this project.
+ * response is generated from decaying, stereo-decorrelated noise. The page
+ * makes no network request beyond its own files.
  *
  * Signal flow
  *
@@ -33,6 +34,8 @@
  * Musical key is A minor throughout, pentatonic A C D E G, at 92 BPM with a
  * 62 BPM variant, so the ambience and the record share one key.
  */
+
+import { RoomMusic, SLOT_MEDIUM } from './room-music.js';
 
 /* ------------------------------------------------------------------ */
 /* The slip, and what each answer does to the mix                      */
@@ -66,6 +69,23 @@ export const SLIP = {
 };
 
 export const DEFAULT_SLIP = { mood: 'brass', note: 'nothing', who: 'across' };
+
+/**
+ * Which record the DJ box actually puts on the turntable.
+ *
+ * The slip is this room's only mechanic, so the record has to follow the slip
+ * rather than a player control: the horns and the dance floor ask for the
+ * up-tempo pressing, slow and quiet ask for the ballad, and a goodbye is this
+ * room's own closing-time vocabulary, so it gets the last-call record. A
+ * fourth slip gets it too — by the fourth request of a sitting the tearoom is
+ * winding down whatever you wrote.
+ */
+export const MUSIC_SLOTS = ['request-1', 'request-2', 'last-call'];
+
+export function musicSlot(slip, slipsSoFar = 1) {
+  if (slip.note === 'goodbye' || slipsSoFar >= 4) return 'last-call';
+  return slip.mood === 'brass' || slip.mood === 'dance' ? 'request-1' : 'request-2';
+}
 
 /** Fold the three answers into one flat mix description. */
 export function resolveMix(slip) {
@@ -760,6 +780,11 @@ function buildBooth(ctx, bus) {
 const LOOKAHEAD = 0.26;
 const TICK_MS = 40;
 
+/* The record is the thing you asked for, so it sits above the room rather than
+ * under it, but not so far above that the room stops being audible around it.
+ * Measured against the 0.20 RMS ceiling the rest of the piece is trimmed to. */
+const MUSIC_TOP = 0.34;
+
 export class Dabang {
   constructor() {
     this.ctx = null;
@@ -768,6 +793,9 @@ export class Dabang {
     this.volume = 0.72;
     this.mix = resolveMix(DEFAULT_SLIP);
     this._timer = null;
+    this.slips = 0;
+    this.musicReady = false;
+    this._musicSlot = musicSlot(DEFAULT_SLIP, 0);
   }
 
   /** Must be called inside a user gesture. Resolves false if audio is blocked. */
@@ -789,6 +817,8 @@ export class Dabang {
     this.record.out.connect(this.recordIn);
     this.room.out.connect(this.roomTone);
     this.booth.out.connect(this.boothOut);
+
+    this._buildMusic();
 
     this.running = true;
     this.applyMix(this.mix, 0.01);
@@ -882,6 +912,59 @@ export class Dabang {
     };
   }
 
+  /* --- the record itself ------------------------------------------------
+   * Three pressings, all of them coming out of the same console player and
+   * the same valve amplifier into the same tiled room, which is why they go
+   * through `console-lp` and into the short room's send rather than straight
+   * at the master. A record you can hear in front of the room instead of in
+   * it would undo everything the rest of this file does.
+   */
+  _buildMusic() {
+    this.music = {};
+    for (const slot of MUSIC_SLOTS) {
+      this.music[slot] = new RoomMusic(this.ctx, {
+        profile: SLOT_MEDIUM[`dabang-1979__${slot}`],
+        destination: this.preMaster,
+        reverbSend: this.sendShort,
+      });
+    }
+    // Loading is not inside the gesture, so a slip can land before the record
+    // is on the platter. The pending slot is applied when the load resolves.
+    Promise.all(MUSIC_SLOTS.map((slot) => this.music[slot]
+      .load(`assets/audio/${slot}.mp3`)
+      .catch(() => { this.music[slot] = null; })))
+      .then(() => { this.musicReady = true; this._applyMusic(1.8); });
+  }
+
+  /** How loud the record is. The slip already says: `record` is its own field. */
+  musicLevel() {
+    return MUSIC_TOP * this.mix.record;
+  }
+
+  /** Which pressing is on the platter right now. */
+  get onDeck() { return this._musicSlot; }
+
+  /** Put a record on. One turntable, so the old one comes off first. */
+  setMusic(slot, fade = 1.4) {
+    this._musicSlot = slot;
+    if (this.musicReady) this._applyMusic(fade);
+  }
+
+  _applyMusic(fade = 1.4) {
+    const level = this.musicLevel();
+    for (const slot of MUSIC_SLOTS) {
+      const m = this.music && this.music[slot];
+      if (!m) continue;
+      if (slot === this._musicSlot) {
+        // A stop() already in flight would pause the element mid-fade.
+        clearTimeout(m._pauseTimer);
+        m.play({ level, fade });
+      } else if (m.playing) {
+        m.stop({ fade: 0.7 });
+      }
+    }
+  }
+
   /** Apply a resolved mix. `glide` is the ramp constant in seconds. */
   applyMix(mix, glide = 0.5) {
     this.mix = mix;
@@ -896,14 +979,19 @@ export class Dabang {
     this.sendLong.gain.setTargetAtTime(mix.wetLong, now, glide);
     this.bleed.gain.setTargetAtTime(0.42 * mix.bleed, now, glide);
     this.hum.gain.setTargetAtTime(0.016 + 0.014 * mix.record, now, glide);
+    // The record rides the same `record` field the amplifier does, so a slip
+    // that asks for a quiet corner gets a quieter record, not just less room.
+    if (this.musicReady) this._applyMusic(1.2);
   }
 
   /**
    * The booth takes the slip. Returns the schedule in seconds from now so the
    * interface can caption each moment as it actually happens.
    */
-  submit(mix) {
+  submit(mix, slip = DEFAULT_SLIP) {
     if (!this.running) return { total: 0, marks: {} };
+    this.slips += 1;
+    const slot = musicSlot(slip, this.slips);
     const t = this.ctx.currentTime;
     const announce = mix.announce;
     const marks = {
@@ -923,6 +1011,9 @@ export class Dabang {
     this.booth.tonearm(t + marks.tonearm);
     this.booth.stylus(t + marks.stylus);
     setTimeout(() => this.applyMix(mix, 0.35), (marks.stylus - 0.05) * 1000);
+    // The record changes when the needle lands, not when the slip is written.
+    // The old side comes off during the tonearm move, which is what covers it.
+    setTimeout(() => this.setMusic(slot, 1.1), (marks.tonearm) * 1000);
     this.record.drop(t + marks.stylus + 0.1);
     if (mix.chime) this.room.trigger.door(t + marks.music + rnd(0.6, 2.4), 1);
     return { total: marks.music + 0.4, marks };

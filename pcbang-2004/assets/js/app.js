@@ -15,7 +15,7 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const state = {
   lang: (navigator.language || 'en').toLowerCase().startsWith('ko') ? 'ko' : 'en',
   seat: 'corner',
-  layers: { keys: true, fans: true, room: true, crt: false, fluo: true },
+  layers: { keys: true, fans: true, room: true, crt: false, fluo: true, music: true },
   muted: false,
   volume: 0.7,
   seconds: 7200,          // 02:00:00 prepaid
@@ -38,6 +38,7 @@ const LAYER_DEFS = [
   { id: 'room', key: 'layerRoom', note: 'layerRoomNote' },
   { id: 'fluo', key: 'layerFluo', note: 'layerFluoNote' },
   { id: 'crt',  key: 'layerCrt',  note: 'layerCrtNote' },
+  { id: 'music', key: 'layerMusic', note: 'layerMusicNote' },
 ];
 
 /* ── i18n plumbing ────────────────────────────────────────────────────── */

@@ -27,6 +27,27 @@ const TAU = Math.PI * 2;
 /* ── seat mixes ──────────────────────────────────────────────────────────
  * `near` is the probability weight for the closest keyboard tier: the corner
  * seat is buried in keyboards, the window seat hears them from behind.      */
+import { RoomMusic, SLOT_MEDIUM } from './room-music.js';
+
+/* ── which music each seat is inside of ──────────────────────────────────
+ *
+ * A PC bang had no single shared music: what you heard depended entirely on
+ * where you were sitting. The window seat is up at the front by the door, so
+ * it gets whatever is coming out of the ceiling speakers over the counter.
+ * The corner seat is the one buried in keyboards where the ranked games get
+ * played, and that music is in your own headset. The counter seat is where
+ * the kettle and the ramen are, and what is playing there is the owner's
+ * radio behind the counter, through a wall.
+ *
+ * Each of the three therefore arrives through a different object, which is
+ * why they do not share a medium. Moving seats crossfades between them:
+ * the piece has one control and this is bound to it.
+ */
+const SEAT_MUSIC = { window: 'lobby', corner: 'ranked', counter: 'ramen' };
+const MUSIC_SLOTS = ['lobby', 'ranked', 'ramen'];
+/* Trimmed against the destination RMS window the bus and limiter are set to. */
+const MUSIC_TOP = 0.44;
+
 export const SEATS = {
   window:  { keys: 0.60, mouse: 0.55, fans: 0.62, room: 0.74, traffic: 1.00, counter: 0.16, reverb: 0.80, near: 0.16 },
   corner:  { keys: 1.00, mouse: 1.00, fans: 1.00, room: 0.56, traffic: 0.00, counter: 0.07, reverb: 1.30, near: 0.62 },
@@ -136,7 +157,8 @@ export class Room {
     this.ctx = null;
     this.ready = false;
     this.seat = 'corner';
-    this.on = { keys: true, fans: true, room: true, crt: false, fluo: true };
+    this.on = { keys: true, fans: true, room: true, crt: false, fluo: true, music: true };
+    this.musicReady = false;
     this.volume = 0.7;
     this.muted = false;
     this._timers = [];
@@ -187,6 +209,7 @@ export class Room {
     this._buildFluorescent();
     this._buildRoomBed();
     this._buildTraffic();
+    this._buildMusic();
 
     this.applyMix(0.001);
     this.master.gain.setTargetAtTime(this.muted ? 0 : this.volume, ctx.currentTime, 0.5);
@@ -194,6 +217,38 @@ export class Room {
     this._startSchedulers();
     this.ready = true;
     return this;
+  }
+
+  _buildMusic() {
+    this.music = {};
+    for (const slot of MUSIC_SLOTS) {
+      this.music[slot] = new RoomMusic(this.ctx, {
+        profile: SLOT_MEDIUM[`pcbang-2004__${slot}`],
+        destination: this.bus,
+        reverbSend: this.convolver,
+      });
+    }
+    Promise.all(MUSIC_SLOTS.map((slot) => this.music[slot]
+      .load(`assets/audio/${slot}.mp3`)
+      .catch(() => { this.music[slot] = null; })))
+      .then(() => { this.musicReady = true; this._applyMusic(2.0); });
+  }
+
+  /* Moving seats fades one out while the other comes up, because you walked
+     across a room rather than pressing next on a player. */
+  _applyMusic(fade = 1.8) {
+    if (!this.musicReady) return;
+    const want = this.on.music ? SEAT_MUSIC[this.seat] : null;
+    for (const slot of MUSIC_SLOTS) {
+      const m = this.music[slot];
+      if (!m) continue;
+      if (slot === want) {
+        clearTimeout(m._pauseTimer);   /* a stop in flight would pause mid fade */
+        m.play({ level: MUSIC_TOP, fade });
+      } else if (m.playing) {
+        m.stop({ fade });
+      }
+    }
   }
 
   _makeLayer() {
@@ -799,6 +854,9 @@ export class Room {
     set('fluo', this.on.fluo ? BASE.fluo : 0, SEND.fluo * rv);
     // audible from anywhere, just closer when you are sitting by the counter
     set('buzz', 0.42 + 0.58 * s.counter, 0.55 * rv);
+
+    // the music the seat is inside of, on the same control as everything else
+    this._applyMusic(Math.max(tau * 3.2, 1.2));
   }
 
   setSeat(id) {

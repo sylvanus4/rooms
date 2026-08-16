@@ -21,8 +21,8 @@ export const STRINGS = {
     ko: '1979년, 다방. 쪽지를 써서 DJ 박스에 넣으면 이 방이 바뀝니다.',
   },
   coverNote: {
-    en: 'Sound only, no files. Everything you are about to hear is built by the browser as it plays. Headphones help.',
-    ko: '음원 파일은 없습니다. 지금부터 들리는 모든 소리는 브라우저가 그 자리에서 만들어 냅니다. 헤드폰을 권합니다.',
+    en: 'Sound is the whole piece. The room is built by the browser as it plays; only the record is a file. Headphones help.',
+    ko: '소리가 본체입니다. 방은 브라우저가 그 자리에서 만들고, 파일은 판에서 나오는 음악뿐입니다. 헤드폰을 권합니다.',
   },
   begin: { en: 'Open the door', ko: '문을 열고 들어가기' },
   blocked: {
@@ -78,6 +78,10 @@ export const STRINGS = {
   nowHead: { en: 'On the turntable', ko: '지금 걸린 판' },
   nowFor: { en: 'For {who}, because {note}.', ko: '{who}에게, {note} 신청합니다.' },
   nowTempo: { en: '{n} beats a minute, A minor', ko: '분당 {n}박, 가단조' },
+  labelMusic: { en: 'the record itself', ko: '판에서 나오는 음악' },
+  sideRequest1: { en: 'the up-tempo pressing', ko: '빠른 쪽 판' },
+  sideRequest2: { en: 'the slow pressing', ko: '느린 쪽 판' },
+  sideLastCall: { en: 'the last-call record', ko: '마지막 판' },
   labelReed: { en: 'reed on the offbeat', ko: '엇박에 리드' },
   labelBrass: { en: 'brass stabs', ko: '관악기 스탭' },
   labelBass: { en: 'walking bass', ko: '워킹 베이스' },
@@ -98,8 +102,8 @@ export const STRINGS = {
 
   /* --- Footer ---------------------------------------------------------- */
   footerNote: {
-    en: 'No recordings, no samples, no network. Synthesised in the browser.',
-    ko: '녹음도 샘플도 네트워크도 없습니다. 브라우저가 합성합니다.',
+    en: 'The room is synthesised in the browser. Only the record is a file, generated with MiniMax-Music3 on our own GPUs. No licensed commercial recordings, and every track is instrumental.',
+    ko: '방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다. 음악 레이어만 자체 GPU에서 MiniMax-Music3로 생성한 파일이며, 라이선스된 상업 녹음물은 한 곡도 쓰지 않았습니다. 모든 곡은 무보컬입니다.',
   },
   credit: { en: 'More pieces', ko: '다른 작업' },
 };

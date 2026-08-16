@@ -44,10 +44,19 @@ slow for a second and a half, the pitch falls, and then it hauls itself back.
 
 ## The sound
 
-Every sound is synthesized at runtime in the Web Audio API. There is no `.mp3`, no
-`.wav`, no sample, no network request of any kind. That is a licensing requirement
-first, since a piece about a mixtape cannot ship the mixtape, and the interesting part
-of the build second.
+The room's ambience is all synthesised live in the browser — no sample files, no recordings.
+Only the music layer is a file: three tracks generated on our own GPUs with MiniMax-Music3.
+No licensed commercial recording is used anywhere, and every track was commissioned with no vocal — instruments only.
+
+방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다 — 샘플 파일도, 녹음물도 없습니다.
+음악 레이어만 자체 GPU에서 MiniMax-Music3로 생성한 파일이며, 라이선스된 상업 녹음물은 한 곡도
+쓰지 않았습니다. 모든 곡은 보컬 없이 악기만으로 발주했습니다.
+
+That split is a licensing requirement first — a piece about a mixtape cannot ship the
+mixtape — and the interesting part of the build second. The three tracks go into
+`musicSum`, which is the input of the tape path, so the wow, the flutter, the oxide loss,
+the dropouts, the creases and the sag land on them exactly as they land on the synthesized
+band. Music that stayed pristine while the tape wore out would break the whole piece.
 
 Everything pitched is in **C sharp minor**: side A is a 68 BPM ballad, side B a 124 BPM
 dance-pop track.
@@ -138,5 +147,7 @@ none is: the music is generated.
 
 ## Licence
 
-MIT, see `LICENSE`. No copyrighted audio is used or included. All sound is synthesized
-at runtime from oscillators and noise buffers.
+MIT, see `LICENSE`. No copyrighted audio is used or included. The deck, the street and the
+band on the tape are synthesized at runtime from oscillators and noise buffers, and the three
+tracks in `assets/audio/` were generated with MiniMax-Music3 on our own GPUs. Every track is
+instrumental.

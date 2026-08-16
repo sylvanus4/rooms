@@ -1,10 +1,17 @@
 /* =============================================================================
    walkman-1999 - synthesis engine
 
-   There is no audio file in this project. Every sound is built here from
+   The street, the transport and the band on the tape are built here from
    oscillators, noise written into AudioBuffers, biquad filters, delay lines,
    LFOs and scheduled envelopes. That is a licensing decision first and the
    interesting part of the build second.
+
+   The one thing that is a file is the music layer at the bottom: three
+   generated tracks, no licensed commercial recording anywhere near them. They
+   are fed into `musicSum`, which is the input of the tape path, so the wow,
+   the flutter, the oxide loss, the dropouts, the creases and the sag all land
+   on them exactly as they land on everything else on this cassette. Music that
+   stayed pristine while the tape wore out would break the entire piece.
 
    Signal flow, top level:
 
@@ -29,6 +36,17 @@
    are functions of how much the visitor has worn the tape at the position the
    head is currently reading. Wear is cumulative and never recovers.
    ========================================================================== */
+
+import { RoomMusic, SLOT_MEDIUM } from "./room-music.js";
+
+/* Which track is on the head. Side A and side B are literal. `rewind` is what
+   plays after you have spooled back: you rewound for a reason, and this is the
+   thing you rewound for. It stays until the tape is flipped or turned over by
+   the auto-reverse, which is the next time the head is somewhere else.       */
+const MUSIC_SLOTS = ["side-a", "side-b", "rewind"];
+/* The synthesised band and the track share a key and a tempo by construction,
+   so this sits with the band rather than on top of it. */
+const MUSIC_TOP = 0.5;
 
 export const SEGMENTS = 16;      /* the tape is modelled as 16 worn regions */
 const BARS = 64;                 /* per side */
@@ -85,6 +103,8 @@ class WalkmanAudio {
     this.running = false;
     this.mode = "stop";            /* stop | play | rew | ff */
     this.side = "A";
+    this._rewound = false;         /* true from a rewind until the tape turns */
+    this.musicReady = false;
     this.barPos = 0;               /* playhead, in bars, 0..BARS */
     this.wear = { A: new Float32Array(SEGMENTS), B: new Float32Array(SEGMENTS) };
     this.volume = 0.8;
@@ -122,6 +142,7 @@ class WalkmanAudio {
     this._master();
     this._tape();
     this._street();
+    this._music();
     this.running = true;
     this._lastTick = this.ctx.currentTime;
     this._nextStep = this.ctx.currentTime + 0.4;
@@ -342,6 +363,48 @@ class WalkmanAudio {
       this.chorusIn.connect(d); d.connect(p); p.connect(this.chorusOut);
     }
     this.chorusOut.connect(this.musicSum);
+  }
+
+  /* ---- the music on the tape --------------------------------------------- */
+
+  _music() {
+    this.music = {};
+    for (const slot of MUSIC_SLOTS) {
+      this.music[slot] = new RoomMusic(this.ctx, {
+        profile: SLOT_MEDIUM[`walkman-1999__${slot}`],
+        /* into the tape path, not the master: everything the wear engine does
+           downstream of here has to happen to the track as well */
+        destination: this.musicSum,
+        reverbSend: this.verb,
+      });
+    }
+    Promise.all(MUSIC_SLOTS.map((slot) => this.music[slot]
+      .load(`assets/audio/${slot}.mp3`)
+      .catch(() => { this.music[slot] = null; })))
+      .then(() => { this.musicReady = true; this._applyMusic(0.9); });
+  }
+
+  /** Which track the head is over: the side, unless you have just rewound. */
+  get musicSlot() {
+    if (this._rewound) return "rewind";
+    return this.side === "A" ? "side-a" : "side-b";
+  }
+
+  /* The transport owns it. The music runs when the tape runs and stops when
+     the tape stops, because on a cassette player there is no other way. */
+  _applyMusic(fade = 0.9) {
+    if (!this.musicReady) return;
+    const want = this.mode === "play" ? this.musicSlot : null;
+    for (const slot of MUSIC_SLOTS) {
+      const m = this.music[slot];
+      if (!m) continue;
+      if (slot === want) {
+        clearTimeout(m._pauseTimer);   /* a stop in flight would pause mid fade */
+        m.play({ level: MUSIC_TOP, fade });
+      } else if (m.playing) {
+        m.stop({ fade: 0.55 });
+      }
+    }
   }
 
   /* ---- the street -------------------------------------------------------- */
@@ -1031,6 +1094,7 @@ class WalkmanAudio {
     this.schedTime = t + 0.22;
     this.anchorBar = this.schedBar;
     this.anchorTime = this.schedTime;
+    this._applyMusic(0.7);
     this._emit("mode", "play");
   }
 
@@ -1043,6 +1107,7 @@ class WalkmanAudio {
     }
     this.mode = "stop";
     this._thunk(t, false);
+    this._applyMusic(0.4);
     this._emit("mode", "stop");
   }
 
@@ -1057,7 +1122,11 @@ class WalkmanAudio {
     /* the tape is grabbed hard where the spool starts. That is why the part
        you keep going back to is the part that dies first. */
     this._wearSpike(this.barPos, 0.034);
+    /* You rewind to get back to something. Spooling forward past it means you
+       are done with it, so fast forward puts the side's own track back. */
+    this._rewound = mode === "rew";
     this._startMotor(mode === "rew" ? -1 : 1);
+    this._applyMusic(0.35);
     this._emit("mode", mode);
   }
 
@@ -1069,6 +1138,8 @@ class WalkmanAudio {
     this.side = this.side === "A" ? "B" : "A";
     this.barPos = 0;
     this._sagged.clear();
+    this._rewound = false;
+    this._applyMusic(0.5);
     this._emit("side", this.side);
   }
 
@@ -1084,6 +1155,8 @@ class WalkmanAudio {
     this.anchorBar = 0;
     this.anchorTime = this.schedTime;
     this._sagged.clear();
+    this._rewound = false;
+    this._applyMusic(0.6);
     this._emit("autoreverse", this.side);
   }
 

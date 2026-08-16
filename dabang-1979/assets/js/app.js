@@ -71,6 +71,13 @@ function render() {
   if (entered) renderNow(resolveMix(slip));
 }
 
+/* Which of the three pressings the box has on, named for the readout. */
+const SIDE = {
+  'request-1': 'sideRequest1',
+  'request-2': 'sideRequest2',
+  'last-call': 'sideLastCall',
+};
+
 /* ── the now-playing readout, which is also the caption track ─────── */
 
 const band = (v) => (v <= 0.02 ? 'off' : v < 0.4 ? 'low' : v < 0.8 ? 'mid' : 'high');
@@ -80,9 +87,10 @@ function renderNow(mix) {
     who: t(LABEL.who[slip.who]),
     note: t(LABEL.note[slip.note]),
   });
-  $('nTempo').textContent = t('nowTempo', { n: mix.bpm });
+  $('nTempo').textContent = `${t('nowTempo', { n: mix.bpm })} · ${t(SIDE[dabang.onDeck] || 'sideRequest1')}`;
 
   const rows = [
+    ['labelMusic', clamp(mix.record / 1.14, 0, 1)],
     ['labelReed', mix.reed / 1.2],
     ['labelBrass', mix.brass],
     ['labelBass', 0.35 + mix.walk * 0.65],
@@ -158,7 +166,7 @@ function submitSlip() {
   $('send').disabled = true;
 
   const mix = resolveMix(slip);
-  const { marks, total } = dabang.submit(mix);
+  const { marks, total } = dabang.submit(mix, slip);
 
   $('slipForm').classList.add('sending');
   const at = (s, key) => setTimeout(() => say(key), Math.round(s * 1000));

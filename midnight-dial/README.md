@@ -14,13 +14,27 @@ Six stations are hidden in the band between 88.0 and 108.0 MHz. None of them are
 
 ## The engineering claim
 
-**There is no audio file in this repository.** Every sound is synthesised in your browser at
-runtime with the Web Audio API: oscillators, noise written into `AudioBuffer`s, biquad
+The room's ambience is all synthesised live in the browser — no sample files, no recordings.
+Only the music layer is a file: three tracks generated on our own GPUs with MiniMax-Music3.
+No licensed commercial recording is used anywhere, and every track was commissioned with no vocal — instruments only.
+
+방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다 — 샘플 파일도, 녹음물도 없습니다.
+음악 레이어만 자체 GPU에서 MiniMax-Music3로 생성한 파일이며, 라이선스된 상업 녹음물은 한 곡도
+쓰지 않았습니다. 모든 곡은 보컬 없이 악기만으로 발주했습니다.
+
+The receiver, the static, the heterodyne whistle and six of the nine stations are synthesised
+at runtime with the Web Audio API: oscillators, noise written into `AudioBuffer`s, biquad
 filters, delay lines, scheduled envelopes, and a convolution reverb whose impulse response is
 generated procedurally rather than sampled from a real room.
 
-That is partly a licensing position (nothing here can infringe anything) and partly the point
-of the exercise.
+The other three stations — 93.9, 102.9 and 106.3 — carry the generated tracks. They are
+stations like any other: the needle is magnetised toward them, the mark lights as you arrive,
+and between them you get the same interstation noise as everywhere else on the band. The
+tracks go through `assets/js/room-music.js` on the `fm-receiver` medium, so they are band
+limited near 15 kHz and compressed the way a broadcast chain compresses, and they join the
+same station bus and the same short room as everything the receiver picks up.
+
+That split is partly a licensing position and partly the point of the exercise.
 
 ### Master chain
 
@@ -127,6 +141,8 @@ says so rather than sitting there silently.
 
 MIT, see [LICENSE](LICENSE).
 
-No copyrighted audio is used, included, or referenced in this project. There are no samples and
-no recordings of any kind. Every sound is generated from first principles at runtime, so the
-whole thing is yours to fork.
+No copyrighted audio is used, included, or referenced in this project. There are no samples
+and no recordings of any kind: the receiver and six of the nine stations are generated from
+first principles at runtime, and the three tracks in `assets/audio/` were generated with
+MiniMax-Music3 on our own GPUs. Every track is instrumental, so the whole thing is yours to
+fork.

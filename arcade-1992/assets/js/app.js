@@ -44,7 +44,7 @@ const state = {
   volume: 0.7,
   muted: false,
   live: false,
-  layers: { cabinets: true, crowd: true, coins: true, machines: true, upstairs: true },
+  layers: { cabinets: true, crowd: true, coins: true, machines: true, upstairs: true, music: true },
 };
 
 const room = new Arcade();
@@ -351,6 +351,7 @@ const LAYER_ROWS = [
   { id: 'coins', name: 'layCoins', note: 'layCoinsNote' },
   { id: 'machines', name: 'layMachines', note: 'layMachinesNote' },
   { id: 'upstairs', name: 'layUpstairs', note: 'layUpstairsNote' },
+  { id: 'music', name: 'layMusic', note: 'layMusicNote' },
 ];
 
 function buildLayers() {

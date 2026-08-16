@@ -22,8 +22,8 @@ export const STRINGS = {
     ko: '1997년의 심야 라디오. 무언가 잡힐 때까지 다이얼을 돌립니다.',
   },
   'hero.hint': {
-    en: 'Press power, then drag the dial. Six stations are hiding in the static. Headphones help.',
-    ko: '전원을 켜고 다이얼을 끕니다. 잡음 사이에 여섯 개의 방송이 숨어 있습니다. 헤드폰을 쓰면 더 좋습니다.',
+    en: 'Press power, then drag the dial. Nine stations are hiding in the static. Headphones help.',
+    ko: '전원을 켜고 다이얼을 끕니다. 잡음 사이에 아홉 개의 방송이 숨어 있습니다. 헤드폰을 쓰면 더 좋습니다.',
   },
   'hero.hintOn': {
     en: 'Drag the dial, scroll it, or use the arrow keys. The space between stations is part of it.',
@@ -70,8 +70,8 @@ export const STRINGS = {
 
   'foot.credit': { en: 'Built by Hyojung Han', ko: '한효정이 만들었습니다' },
   'foot.synth': {
-    en: 'Every sound here is generated in your browser with the Web Audio API. No recordings, no samples.',
-    ko: '여기의 모든 소리는 브라우저에서 Web Audio API로 즉석 생성됩니다. 녹음도 샘플도 쓰지 않습니다.',
+    en: 'The receiver and its room are generated live in the browser - no sample files, no recordings. Only the three music stations are files, generated on our own GPUs with MiniMax-Music3; no licensed commercial recording is used, and every track is instrumental.',
+    ko: '방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다 - 샘플 파일도, 녹음물도 없습니다. 음악 레이어만 자체 GPU에서 MiniMax-Music3로 생성한 파일이며, 라이선스된 상업 녹음물은 한 곡도 쓰지 않았습니다. 모든 곡은 무보컬입니다.',
   },
 };
 
@@ -110,6 +110,27 @@ export const STATION_TEXT = {
     desc: {
       en: 'Whistles, morse, and a signal that keeps fading out.',
       ko: '휘파람 같은 소리와 모스 신호, 계속 사라지는 전파입니다.',
+    },
+  },
+  signal: {
+    name: { en: 'Signal', ko: '신호' },
+    desc: {
+      en: 'A carrier that turned out to have music on it, band-limited the way the receiver limits everything.',
+      ko: '음악이 실려 있던 반송파. 수신기가 그렇듯 대역이 잘려 있습니다.',
+    },
+  },
+  letter: {
+    name: { en: 'The Letter', ko: '엽서' },
+    desc: {
+      en: 'The hour where listeners send things in and someone reads them out. Tonight, only what was underneath.',
+      ko: '청취자가 보낸 사연을 읽어 주던 시간. 오늘은 그 밑에 깔리던 것만 남았습니다.',
+    },
+  },
+  closing: {
+    name: { en: 'Closing', ko: '방송 종료' },
+    desc: {
+      en: 'What the station plays out on, right before the carrier drops for the night.',
+      ko: '전파가 끊기기 직전, 방송을 닫으며 내보내던 곡입니다.',
     },
   },
   fouram: {
