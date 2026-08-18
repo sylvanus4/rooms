@@ -149,5 +149,6 @@ none is: the music is generated.
 
 MIT, see `LICENSE`. No copyrighted audio is used or included. The deck, the street and the
 band on the tape are synthesized at runtime from oscillators and noise buffers, and the three
-tracks in `assets/audio/` were generated with MiniMax-Music3 on our own GPUs. Every track is
-instrumental.
+tracks in `assets/audio/` were generated with MiniMax-Music3 on our own GPUs. Side B is sung: its
+vocal was separated out, re-sung in a licensed speaker timbre, and given the original melody
+back. Side A and the rewind are instruments only.

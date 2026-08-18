@@ -60,8 +60,8 @@ export const STRINGS = {
   labelSide:    { en: "SIDE", ko: "SIDE" },
   labelHand1:   { en: "for the walk", ko: "가는 길에" },
   labelHand2:   { en: "97 winter", ko: "97 겨울" },
-  credit:       { en: "The tape deck and the street are synthesized live in the browser - no sample files, no recordings. Only the music layer is a file, generated on our own GPUs with MiniMax-Music3; no licensed commercial recording is used, and every track is instrumental.",
-                  ko: "방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다 - 샘플 파일도, 녹음물도 없습니다. 음악 레이어만 자체 GPU에서 MiniMax-Music3로 생성한 파일이며, 라이선스된 상업 녹음물은 한 곡도 쓰지 않았습니다. 모든 곡은 무보컬입니다." },
+  credit:       { en: "The tape deck and the street are synthesized live in the browser - no sample files, no recordings. Only the music layer is a file, generated on our own GPUs with MiniMax-Music3; no licensed commercial recording is used. Side B is sung -- its vocal was separated out and re-sung in a licensed speaker timbre, with the original melody transplanted back. Side A and the rewind are instruments only.",
+                  ko: "방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다 - 샘플 파일도, 녹음물도 없습니다. 음악 레이어만 자체 GPU에서 MiniMax-Music3로 생성한 파일이며, 라이선스된 상업 녹음물은 한 곡도 쓰지 않았습니다. B면에는 노래가 있습니다 - 보컬을 분리해 라이선스를 가진 화자 음색으로 다시 부르게 한 뒤 원래 선율을 되이식했습니다. A면과 되감기는 악기뿐입니다." },
   creditLink:   { en: "More pieces", ko: "다른 작업" },
 };
 
