@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>New Orleans 1927 - a hot-jazz room you can move around in</title>
+<meta name="description" content="A narrow hot-jazz room in 1927, with a live band at the far end of it. Choose a seat and an hour and the room moves around you. Everything but the band is synthesised in the browser while you listen.">
+<meta name="theme-color" content="#120a08">
+<meta property="og:title" content="New Orleans 1927">
+<meta property="og:description" content="Choose a seat and an hour in a 1927 hot-jazz room, and the band changes shape as you cross the floor. Everything but the band is synthesised in the browser.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sylvanus4.github.io/neworleans-1927/">
+<link rel="canonical" href="https://sylvanus4.github.io/neworleans-1927/">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="rail">
+  <button type="button" id="lang" class="rail-btn" aria-label="Switch to Korean">한국어</button>
+  <button type="button" id="mute" class="rail-btn" aria-pressed="false" aria-label="Mute">
+    <span class="ico" aria-hidden="true"></span>
+  </button>
+  <div class="vol" id="vol" role="slider" tabindex="0"
+       aria-label="Volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="72"
+       aria-valuetext="Volume 72 percent">
+    <span class="vol-fill" id="volFill"></span>
+  </div>
+</header>
+
+<main>
+
+  <!-- The room is behind everything, including the stairwell screen. -->
+  <svg class="scene" id="scene" viewBox="0 0 1200 750" preserveAspectRatio="xMidYMid slice"
+       aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="gWall" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#4b271b"/><stop offset="0.5" stop-color="#33190f"/>
+        <stop offset="1" stop-color="#1c0e08"/>
+      </linearGradient>
+      <linearGradient id="gStage" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#6d3d1e"/><stop offset="1" stop-color="#2e180c"/>
+      </linearGradient>
+      <linearGradient id="gBrass" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#f0c069"/><stop offset="0.5" stop-color="#b47f2c"/>
+        <stop offset="1" stop-color="#6b4715"/>
+      </linearGradient>
+      <linearGradient id="gZinc" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#8d8a84"/><stop offset="0.4" stop-color="#5b5751"/>
+        <stop offset="1" stop-color="#2a2723"/>
+      </linearGradient>
+      <linearGradient id="gTable" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#6a3f21"/><stop offset="1" stop-color="#311a0c"/>
+      </linearGradient>
+      <linearGradient id="gDrink" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#e0913a"/><stop offset="1" stop-color="#8c4a12"/>
+      </linearGradient>
+      <!-- The only cold light in the building: the street, coming down the
+           stairwell. Everything else in this room is a filament or a flame. -->
+      <linearGradient id="gStreet" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#cfe6f5" stop-opacity="0.9"/>
+        <stop offset="1" stop-color="#5f89a8" stop-opacity="0.05"/>
+      </linearGradient>
+      <radialGradient id="gLamp" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0" stop-color="#ffd79c" stop-opacity="0.6"/>
+        <stop offset="1" stop-color="#ffb055" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="gVig" cx="0.5" cy="0.44" r="0.68">
+        <stop offset="0.24" stop-color="#000" stop-opacity="0"/>
+        <stop offset="0.7" stop-color="#0a0503" stop-opacity="0.44"/>
+        <stop offset="1" stop-color="#060201" stop-opacity="0.97"/>
+      </radialGradient>
+      <pattern id="pTin" width="56" height="56" patternUnits="userSpaceOnUse">
+        <rect width="56" height="56" fill="none"/>
+        <path d="M28 6 46 28 28 50 10 28Z" fill="none" stroke="#a4763a" stroke-width="1.6" opacity="0.5"/>
+        <circle cx="28" cy="28" r="4" fill="none" stroke="#a4763a" stroke-width="1.2" opacity="0.4"/>
+      </pattern>
+      <filter id="fSmoke" x="-30%" y="-30%" width="160%" height="160%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.007 0.015" numOctaves="3" seed="11"/>
+        <feDisplacementMap in="SourceGraphic" scale="52"/>
+        <feGaussianBlur stdDeviation="17"/>
+      </filter>
+      <filter id="fGrain">
+        <feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="2" seed="5"/>
+        <feColorMatrix type="saturate" values="0"/>
+      </filter>
+      <clipPath id="cDoor"><rect x="978" y="96" width="196" height="300"/></clipPath>
+    </defs>
+
+    <!-- back wall -->
+    <rect x="-200" y="-420" width="1600" height="1500" fill="url(#gWall)"/>
+
+    <!-- pressed tin ceiling: the hard surface the whole short reverb is -->
+    <g opacity="0.5">
+      <rect x="-200" y="-420" width="1600" height="580" fill="url(#pTin)"/>
+      <path d="M-200 158H1400" stroke="#7d5525" stroke-width="4" opacity="0.7"/>
+    </g>
+
+    <!-- the ceiling fan, four blades, turning slowly -->
+    <g>
+      <path d="M604 -40V54" stroke="#6d4c22" stroke-width="6"/>
+      <ellipse cx="604" cy="62" rx="20" ry="12" fill="#3d2a13" stroke="url(#gBrass)" stroke-width="2"/>
+      <g class="fan" style="transform-origin:604px 66px">
+        <path d="M604 66 L800 52 L800 80 L604 74Z" fill="#2a1a0d" opacity="0.86"/>
+        <path d="M604 66 L408 52 L408 80 L604 74Z" fill="#2a1a0d" opacity="0.86"/>
+        <path d="M604 66 L640 -34 L666 -22 L616 70Z" fill="#241609" opacity="0.6"/>
+        <path d="M604 66 L568 166 L542 154 L592 62Z" fill="#241609" opacity="0.6"/>
+      </g>
+      <circle cx="604" cy="66" r="9" fill="url(#gBrass)"/>
+    </g>
+
+    <!-- filament lamps over the stage, and the haze they light -->
+    <g>
+      <path d="M470 158V206M604 158V186M738 158V206" stroke="#5c4020" stroke-width="3"/>
+      <circle cx="470" cy="214" r="9" fill="#ffd79c"/>
+      <circle cx="604" cy="194" r="10" fill="#ffe3b6"/>
+      <circle cx="738" cy="214" r="9" fill="#ffd79c"/>
+      <ellipse id="hazeGlow" cx="604" cy="300" rx="360" ry="200" fill="url(#gLamp)" opacity="0.14"/>
+    </g>
+
+    <!-- ── the bar, along the left wall ──────────────────────────── -->
+    <g>
+      <!-- mirror and bottle shelf -->
+      <rect x="-40" y="176" width="330" height="212" rx="4" fill="#1b0f09"/>
+      <rect x="-40" y="176" width="330" height="212" rx="4" fill="none" stroke="url(#gBrass)" stroke-width="5"/>
+      <rect x="-28" y="188" width="306" height="188" fill="#2a1a12" opacity="0.9"/>
+      <path d="M-28 188 L86 188 L-10 376 L-28 376Z" fill="#ffe2b0" opacity="0.07"/>
+      <g>
+        <rect x="-20" y="300" width="290" height="8" fill="#4a2e15"/>
+        <g fill="#3c1d16">
+          <rect x="0" y="252" width="18" height="48" rx="5"/><rect x="26" y="244" width="16" height="56" rx="5"/>
+          <rect x="50" y="256" width="20" height="44" rx="5"/><rect x="80" y="240" width="15" height="60" rx="5"/>
+          <rect x="104" y="258" width="19" height="42" rx="5"/><rect x="132" y="248" width="16" height="52" rx="5"/>
+          <rect x="158" y="254" width="18" height="46" rx="5"/><rect x="186" y="242" width="15" height="58" rx="5"/>
+          <rect x="210" y="256" width="20" height="44" rx="5"/><rect x="240" y="250" width="16" height="50" rx="5"/>
+        </g>
+        <g fill="#c98a3e" opacity="0.35">
+          <rect x="0" y="252" width="18" height="12" rx="5"/><rect x="80" y="240" width="15" height="12" rx="5"/>
+          <rect x="186" y="242" width="15" height="12" rx="5"/>
+        </g>
+      </g>
+      <!-- the zinc counter -->
+      <path d="M-60 404h380l-26 44H-60Z" fill="url(#gZinc)"/>
+      <path d="M-60 404h380l-6 10H-60Z" fill="#b3aea6" opacity="0.55"/>
+      <path d="M-60 448h354v128H-60Z" fill="#20130b"/>
+      <g opacity="0.5" stroke="#4a2c15" stroke-width="3">
+        <path d="M20 448v128M120 448v128M220 448v128"/>
+      </g>
+      <!-- a glass and a bottle already on it -->
+      <path d="M188 372h22l-4 32h-14Z" fill="#e6c88f" opacity="0.65"/>
+      <rect x="238" y="356" width="17" height="48" rx="4" fill="#4a2118"/>
+      <rect x="242" y="340" width="9" height="18" rx="3" fill="#4a2118"/>
+    </g>
+
+    <!-- ── the stage, straight ahead ─────────────────────────────── -->
+    <g>
+      <ellipse cx="604" cy="500" rx="290" ry="46" fill="#0d0603" opacity="0.66"/>
+      <path d="M356 452h496v54H356Z" fill="url(#gStage)"/>
+      <path d="M356 452h496v9H356Z" fill="#8a5527" opacity="0.7"/>
+      <path d="M356 506h496v16H356Z" fill="#150b05" opacity="0.8"/>
+
+      <!-- tuba: the bass, standing at the back on the left -->
+      <g>
+        <path d="M402 452c0-46 16-74 34-74s30 22 30 50" fill="none" stroke="#1a0e07" stroke-width="17" stroke-linecap="round"/>
+        <ellipse cx="470" cy="360" rx="34" ry="15" fill="url(#gBrass)" opacity="0.9"/>
+        <path d="M452 372a20 20 0 0 0 36 0" fill="#1a0e07"/>
+        <path d="M404 452h44v-18h-44Z" fill="#1a0e07"/>
+      </g>
+
+      <!-- banjo: chording on every beat, which is why it is dead centre back -->
+      <g>
+        <path d="M524 452c0-42 12-64 28-64s26 22 26 64Z" fill="#160c06"/>
+        <circle cx="551" cy="404" r="19" fill="#e8d6ac" opacity="0.85"/>
+        <circle cx="551" cy="404" r="19" fill="none" stroke="url(#gBrass)" stroke-width="2.5"/>
+        <path d="M566 396l44-34" stroke="#2c1a0c" stroke-width="7" stroke-linecap="round"/>
+        <path d="M609 361l10-8" stroke="url(#gBrass)" stroke-width="6" stroke-linecap="round"/>
+      </g>
+
+      <!-- the front line, standing at the lip: cornet, clarinet, trombone.
+           Three men improvising at once is the whole shape of this music, so
+           they are the only figures drawn at full height. -->
+      <g>
+        <!-- cornet, bell pointed straight out of the picture -->
+        <path d="M624 452c0-56 14-90 30-90s30 34 30 90Z" fill="#0d0603"/>
+        <ellipse cx="654" cy="348" rx="17" ry="19" fill="#0d0603"/>
+        <path d="M668 386l38 6" stroke="#0d0603" stroke-width="9" stroke-linecap="round"/>
+        <ellipse cx="716" cy="394" rx="15" ry="21" fill="url(#gBrass)"/>
+        <ellipse cx="716" cy="394" rx="8" ry="13" fill="#3a2409"/>
+        <path d="M690 392h20" stroke="url(#gBrass)" stroke-width="7" stroke-linecap="round"/>
+      </g>
+      <g>
+        <!-- clarinet, held high, which is where it goes in the last chorus -->
+        <path d="M736 452c0-52 12-84 26-84s26 32 26 84Z" fill="#100804"/>
+        <ellipse cx="762" cy="356" rx="15" ry="17" fill="#100804"/>
+        <path d="M772 372l24-56" stroke="#1a0f06" stroke-width="9" stroke-linecap="round"/>
+        <path d="M795 318l7-16" stroke="#241407" stroke-width="11" stroke-linecap="round"/>
+        <g fill="url(#gBrass)" opacity="0.8">
+          <circle cx="779" cy="352" r="2.6"/><circle cx="784" cy="341" r="2.6"/><circle cx="789" cy="330" r="2.6"/>
+        </g>
+      </g>
+      <g>
+        <!-- trombone, slide out in fourth position -->
+        <path d="M842 452c0-56 14-90 30-90s30 34 30 90Z" fill="#0d0603"/>
+        <ellipse cx="872" cy="348" rx="17" ry="19" fill="#0d0603"/>
+        <path d="M886 388l-96 22" stroke="url(#gBrass)" stroke-width="6" stroke-linecap="round"/>
+        <path d="M886 398l-96 22" stroke="url(#gBrass)" stroke-width="5" stroke-linecap="round"/>
+        <path d="M784 406l-8 2" stroke="#e6c088" stroke-width="12" stroke-linecap="round"/>
+        <ellipse cx="900" cy="380" rx="13" ry="19" fill="url(#gBrass)"/>
+        <ellipse cx="900" cy="380" rx="6" ry="11" fill="#3a2409"/>
+      </g>
+
+      <!-- drums, off to the right: bass drum, snare, and a wood block -->
+      <g>
+        <ellipse cx="960" cy="428" rx="46" ry="46" fill="#231207"/>
+        <ellipse cx="960" cy="428" rx="46" ry="46" fill="none" stroke="url(#gBrass)" stroke-width="3"/>
+        <ellipse cx="960" cy="428" rx="36" ry="36" fill="#e4d3ab" opacity="0.72"/>
+        <path d="M916 452h88v14h-88Z" fill="#150b05"/>
+        <ellipse cx="1024" cy="404" rx="24" ry="9" fill="#d9c69c" opacity="0.8"/>
+        <path d="M1000 404h48v22h-48Z" fill="#2b170a"/>
+        <rect x="1040" y="366" width="26" height="12" rx="3" fill="#7a4c1e"/>
+        <path d="M1048 366l14-26" stroke="#3a2210" stroke-width="5" stroke-linecap="round"/>
+      </g>
+    </g>
+
+    <!-- ── the stairs and the door, on the right ─────────────────── -->
+    <g>
+      <rect x="978" y="96" width="196" height="300" fill="#0c0805"/>
+      <g clip-path="url(#cDoor)">
+        <rect x="978" y="96" width="196" height="300" fill="url(#gStreet)" opacity="0.5"/>
+        <path d="M978 300h196v96H978Z" fill="#0e0a07" opacity="0.8"/>
+        <!-- somebody standing in the doorway with the street behind them -->
+        <path d="M1064 396c0-64 18-104 38-104s38 40 38 104Z" fill="#0a0605"/>
+        <ellipse cx="1102" cy="278" rx="19" ry="21" fill="#0a0605"/>
+        <path d="M1076 262h52l6 12h-64Z" fill="#0a0605"/>
+      </g>
+      <rect x="978" y="96" width="196" height="300" fill="none" stroke="url(#gBrass)" stroke-width="6"/>
+      <!-- the flight of stairs coming down into the room -->
+      <g fill="#241408" stroke="#3d2411" stroke-width="2">
+        <path d="M1200 396h-186v34h186Z"/>
+        <path d="M1200 430h-160v34h160Z"/>
+        <path d="M1200 464h-134v34h134Z"/>
+        <path d="M1200 498h-108v36h108Z"/>
+        <path d="M1200 534h-82v38h82Z"/>
+      </g>
+      <!-- and the cold light lying across them -->
+      <g opacity="0.4">
+        <path d="M1014 396h186v34h-186Z" fill="#a8cde6" opacity="0.3"/>
+        <path d="M1040 430h160v22h-160Z" fill="#a8cde6" opacity="0.18"/>
+        <path d="M1066 464h134v14h-134Z" fill="#a8cde6" opacity="0.1"/>
+      </g>
+    </g>
+
+    <!-- ── the crowd, between you and the stage ──────────────────── -->
+    <g fill="#0b0604">
+      <g opacity="0.92">
+        <ellipse cx="120" cy="576" rx="27" ry="30"/><path d="M84 566h72l10 14H74Z"/>
+        <path d="M78 750c0-92 20-146 42-146s42 54 42 146Z"/>
+        <ellipse cx="272" cy="590" rx="25" ry="28"/><path d="M240 580h64l9 13h-82Z"/>
+        <path d="M234 750c0-88 18-140 38-140s38 52 38 140Z"/>
+        <ellipse cx="424" cy="570" rx="26" ry="29"/>
+        <path d="M386 750c0-92 18-146 38-146s38 54 38 146Z"/>
+        <ellipse cx="700" cy="584" rx="25" ry="28"/><path d="M668 574h64l9 13h-82Z"/>
+        <path d="M662 750c0-88 18-140 38-140s38 52 38 140Z"/>
+        <ellipse cx="856" cy="566" rx="27" ry="30"/>
+        <path d="M814 750c0-94 20-150 42-150s42 56 42 150Z"/>
+        <ellipse cx="1008" cy="592" rx="24" ry="27"/><path d="M978 582h60l8 12h-76Z"/>
+        <path d="M972 750c0-86 16-136 36-136s36 50 36 136Z"/>
+      </g>
+    </g>
+
+    <!-- ── your own table, right in front of you ─────────────────── -->
+    <g>
+      <ellipse cx="556" cy="700" rx="230" ry="40" fill="#080402" opacity="0.7"/>
+      <path d="M372 656h368l44 94H328Z" fill="url(#gTable)"/>
+      <path d="M372 656h368l7 16H365Z" fill="#8a5a2e" opacity="0.5"/>
+      <!-- the glass. It is the only meter this room is allowed: see app.js. -->
+      <g>
+        <path d="M520 660h72l-9 74h-54Z" fill="#f0e6cd" opacity="0.2"/>
+        <path d="M523 682h66l-7 52h-52Z" fill="url(#gDrink)" opacity="0.9"/>
+        <ellipse id="glassSurface" cx="556" cy="682" rx="33" ry="8" fill="#f0ae5a" opacity="0.95"/>
+        <path d="M520 660h72l-9 74h-54Z" fill="none" stroke="#f5e9c9" stroke-width="2.5" opacity="0.55"/>
+        <path d="M527 664l-6 62" stroke="#fff5dd" stroke-width="3" opacity="0.35"/>
+      </g>
+      <!-- somebody's hat brim on the table edge, and a box of matches -->
+      <ellipse cx="676" cy="700" rx="54" ry="17" fill="#160c06"/>
+      <path d="M652 690c0-16 48-16 48 0v6h-48Z" fill="#1d1108"/>
+      <path d="M410 706h56v20h-56Z" fill="#a8391b"/>
+      <path d="M410 706h56v6h-56Z" fill="#d8703a"/>
+    </g>
+
+    <!-- smoke at head height, not a wash over the whole room -->
+    <g class="smoke" opacity="0.14" filter="url(#fSmoke)">
+      <ellipse cx="420" cy="250" rx="270" ry="50" fill="#ffd9a3"/>
+      <ellipse cx="860" cy="192" rx="230" ry="44" fill="#ffcf90"/>
+      <ellipse cx="620" cy="330" rx="200" ry="36" fill="#ffe0b4"/>
+    </g>
+    <rect x="-200" y="-420" width="1600" height="1500" filter="url(#fGrain)" opacity="0.1"
+          style="mix-blend-mode:overlay"/>
+    <rect x="-200" y="-420" width="1600" height="1500" fill="url(#gVig)"/>
+  </svg>
+
+  <!-- ── the stairs down ──────────────────────────────────────────── -->
+  <section id="cover" class="cover">
+    <p class="cover-year" id="cYear">1927</p>
+    <h1 class="cover-title" id="cTitle">New Orleans</h1>
+    <p class="cover-hero" id="cHero"></p>
+    <button type="button" id="begin" class="begin"><span id="cBegin"></span></button>
+    <p class="cover-note" id="cNote"></p>
+    <p class="cover-warn" id="cWarn" hidden></p>
+  </section>
+
+  <!-- ── the room ─────────────────────────────────────────────────── -->
+  <div id="room" class="room" hidden>
+
+    <div class="stage">
+
+      <!-- the table card -->
+      <form id="cardForm" class="card" novalidate>
+        <div class="card-rule" aria-hidden="true"></div>
+        <div class="card-head">
+          <h2 class="card-h" id="sHead">TABLE CARD</h2>
+          <p class="card-sub" id="sSub"></p>
+        </div>
+        <p class="card-hint" id="sHint"></p>
+
+        <div class="row">
+          <p class="q" id="qSeat">Put me</p>
+          <div class="chips" role="radiogroup" aria-labelledby="qSeat" data-group="seat">
+            <button type="button" class="chip" role="radio" data-value="front" aria-checked="false" tabindex="-1"></button>
+            <button type="button" class="chip" role="radio" data-value="bar" aria-checked="true" tabindex="0"></button>
+            <button type="button" class="chip" role="radio" data-value="back" aria-checked="false" tabindex="-1"></button>
+            <button type="button" class="chip" role="radio" data-value="stairs" aria-checked="false" tabindex="-1"></button>
+          </div>
+        </div>
+
+        <div class="row">
+          <p class="q" id="qHour">And it is</p>
+          <div class="chips" role="radiogroup" aria-labelledby="qHour" data-group="hour">
+            <button type="button" class="chip" role="radio" data-value="early" aria-checked="false" tabindex="-1"></button>
+            <button type="button" class="chip" role="radio" data-value="midnight" aria-checked="true" tabindex="0"></button>
+            <button type="button" class="chip" role="radio" data-value="two" aria-checked="false" tabindex="-1"></button>
+            <button type="button" class="chip" role="radio" data-value="close" aria-checked="false" tabindex="-1"></button>
+          </div>
+        </div>
+
+        <button type="submit" id="send" class="send"></button>
+        <div class="card-foot" aria-hidden="true"></div>
+      </form>
+
+      <!-- what is happening on the floor right now -->
+      <p class="floor-line" id="floorLine" role="status" aria-live="polite"></p>
+
+      <!-- what reaches this seat, and what else is in the air -->
+      <aside class="readouts">
+        <section id="now" class="now" hidden>
+          <h2 class="now-h" id="nHead">From this seat</h2>
+          <p class="now-where" id="nWhere"></p>
+          <p class="now-medium" id="nMedium"></p>
+          <p class="now-tempo" id="nTempo"></p>
+          <ul class="meters" id="nMeters"></ul>
+          <button type="button" id="again" class="again"></button>
+        </section>
+
+        <section class="legend" id="legend">
+          <h2 class="legend-h" id="lHead">What is in the air</h2>
+          <p id="lCrowd"></p>
+          <p id="lBar"></p>
+          <p id="lFloor"></p>
+          <p id="lStreet"></p>
+        </section>
+      </aside>
+
+    </div>
+  </div>
+</main>
+
+<footer class="foot">
+  <span id="fNote"></span>
+  <a href="https://sylvanus4.github.io" id="fCredit">More pieces</a>
+</footer>
+
+<script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

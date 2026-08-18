@@ -1,0 +1,636 @@
+/* neworleans-1927 - lamp black, oxblood, brass, and one cold blue coming down
+   the stairs from the street. One committed look, and no theme toggle: the
+   room has one set of lights in it and they are all on fire except one. */
+
+:root {
+  /* Surfaces. A basement room with a pressed-tin ceiling and no daylight. */
+  --page:      #120a08;
+  --room-back: #2b1712;
+  --room-mid:  #46251a;
+  --room-lit:  #6d3d1e;
+
+  /* Ink and card stock. The card is stiff board, not a torn slip. */
+  --cream:     #f7ead2;
+  --cream-dim: #d6bd97;
+  --card:      #efe3c6;
+  --card-2:    #e2d2ae;
+  --card-3:    #cfbb92;
+  --ink:       #2f1c10;
+  --ink-soft:  #6b4c2d;
+  --oxblood:   #8c1f24;
+
+  /* Fittings. */
+  --amber:     #f2b263;
+  --amber-hi:  #ffd79c;
+  --brass:     #cf9a41;
+  --brass-dim: #8d6528;
+  --zinc:      #8d8a84;
+
+  /* The one thing in the building that is not on fire: the street, arriving
+     down the stairwell. It is the focus colour for exactly that reason. */
+  --street:     #a8cde6;
+  --street-dim: #4f7791;
+
+  /* Type. Two families, both local. A condensed grotesque for anything a
+     jobbing printer would have set in metal on a table card, and an
+     old-style serif for the room's own voice. */
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia,
+                  'AppleMyungjo', 'Nanum Myeongjo', Batang, serif;
+  --font-body: Georgia, 'Times New Roman', 'Apple SD Gothic Neo',
+               'Malgun Gothic', 'Nanum Myeongjo', serif;
+  --font-press: 'Futura', 'Avenir Next Condensed', 'Helvetica Neue',
+                'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+
+  /* A rhythm, not a uniform pad. */
+  --s-1: 0.35rem;
+  --s-2: 0.7rem;
+  --s-3: 1.15rem;
+  --s-4: 1.9rem;
+  --s-5: 3.1rem;
+  --s-6: 5rem;
+
+  --r-sharp: 2px;
+  --r-soft: 8px;
+  --r-pill: 999px;
+
+  --t-fast: 140ms;
+  --t-mid: 320ms;
+  --t-slow: 880ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-hand: cubic-bezier(0.55, -0.12, 0.28, 1.2);
+  --ease-constant: cubic-bezier(0, 0, 1, 1);
+
+  --lift: 0 1px 0 rgba(255, 226, 176, 0.13), 0 12px 24px rgba(0, 0, 0, 0.46);
+  --lift-sm: 0 1px 0 rgba(255, 226, 176, 0.1), 0 4px 10px rgba(0, 0, 0, 0.38);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--page);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 0.9rem + 0.22vw, 1.06rem);
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+[hidden] { display: none !important; }
+
+/* ── the rail ─────────────────────────────────────────────────────── */
+
+.rail {
+  position: absolute;
+  inset: var(--s-3) var(--s-3) auto auto;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.rail-btn {
+  min-width: 46px;
+  min-height: 46px;
+  padding: 0 var(--s-2);
+  border: 1px solid var(--brass-dim);
+  border-radius: var(--r-sharp);
+  background: linear-gradient(180deg, rgba(64, 36, 20, 0.92), rgba(22, 12, 7, 0.92));
+  color: var(--amber-hi);
+  font-family: var(--font-press);
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  box-shadow: var(--lift-sm);
+  transition: transform var(--t-fast) var(--ease-out-expo),
+              border-color var(--t-fast) var(--ease-out-soft),
+              color var(--t-fast) var(--ease-out-soft);
+}
+
+.rail-btn:hover { border-color: var(--brass); color: #fff3da; transform: translateY(-1px); }
+.rail-btn:active { transform: translateY(1px) scale(0.98); }
+.rail-btn[aria-pressed="true"] { color: var(--street); border-color: var(--street-dim); }
+
+.ico {
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin: 0 auto;
+  background: currentColor;
+  clip-path: polygon(0 34%, 32% 34%, 62% 6%, 62% 94%, 32% 66%, 0 66%);
+}
+.rail-btn[aria-pressed="true"] .ico {
+  clip-path: polygon(0 34%, 32% 34%, 62% 6%, 62% 94%, 32% 66%, 0 66%, 0 34%,
+                     74% 30%, 78% 26%, 100% 48%, 96% 52%);
+}
+
+.vol {
+  position: relative;
+  width: 106px;
+  height: 46px;
+  padding: 20px 0;
+  border: 1px solid var(--brass-dim);
+  border-radius: var(--r-sharp);
+  background: linear-gradient(180deg, rgba(64, 36, 20, 0.92), rgba(22, 12, 7, 0.92));
+  cursor: pointer;
+  box-shadow: var(--lift-sm);
+  touch-action: none;
+}
+.vol::before {
+  content: "";
+  position: absolute;
+  inset: 20px 8px;
+  background: #100804;
+  border-radius: var(--r-pill);
+}
+.vol-fill {
+  position: absolute;
+  inset: 20px 8px auto 8px;
+  height: 6px;
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--brass-dim), var(--amber));
+  border-radius: var(--r-pill);
+  transition: transform var(--t-fast) var(--ease-out-soft);
+}
+
+:focus-visible {
+  outline: 3px solid var(--street);
+  outline-offset: 3px;
+}
+
+/* ── the stairs down ──────────────────────────────────────────────── */
+
+.cover {
+  position: relative;
+  z-index: 10;
+  min-height: 100dvh;
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: var(--s-2);
+  padding: var(--s-6) clamp(1.1rem, 6vw, 7rem) var(--s-5);
+  /* Not opaque. You are on the stairs looking down into the room, so the
+     room stays faintly visible behind the screen rather than being covered. */
+  background:
+    radial-gradient(110% 80% at 86% 2%, rgba(168, 205, 230, 0.16), transparent 54%),
+    radial-gradient(120% 90% at 18% 92%, rgba(140, 31, 36, 0.3), transparent 62%),
+    linear-gradient(172deg, rgba(18, 10, 8, 0.84), rgba(8, 4, 2, 0.96) 66%);
+}
+.cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* the treads, throwing bands of cold light across the screen */
+  background: repeating-linear-gradient(96deg,
+    rgba(168, 205, 230, 0.045) 0 2px, transparent 2px 34px);
+}
+
+.cover-year {
+  margin: 0;
+  font-family: var(--font-press);
+  font-size: 0.82rem;
+  letter-spacing: 0.72em;
+  color: var(--amber);
+  text-transform: uppercase;
+}
+
+.cover-title {
+  margin: 0 0 var(--s-1);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3rem, 12vw, 9rem);
+  line-height: 0.84;
+  letter-spacing: -0.035em;
+  color: var(--amber-hi);
+  text-shadow: 0 0 64px rgba(255, 176, 74, 0.26);
+}
+
+.cover-hero {
+  margin: 0;
+  max-width: 32ch;
+  font-size: clamp(1.12rem, 0.95rem + 1vw, 1.7rem);
+  line-height: 1.44;
+  color: var(--cream);
+  text-wrap: balance;
+}
+
+.begin {
+  margin-top: var(--s-3);
+  min-height: 60px;
+  padding: 0 var(--s-4);
+  border: 1px solid var(--brass);
+  border-radius: var(--r-sharp);
+  background: linear-gradient(180deg, #77441a, #3d2110);
+  color: var(--amber-hi);
+  font-family: var(--font-press);
+  font-size: 0.88rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: var(--lift);
+  transition: transform var(--t-mid) var(--ease-out-expo),
+              box-shadow var(--t-mid) var(--ease-out-expo),
+              background-color var(--t-mid) var(--ease-out-soft);
+}
+.begin:hover { transform: translateY(-3px); box-shadow: 0 16px 32px rgba(0, 0, 0, 0.52); }
+.begin:active { transform: translateY(0) scale(0.985); }
+
+.cover-note {
+  margin: var(--s-2) 0 0;
+  max-width: 48ch;
+  color: var(--cream-dim);
+  font-size: 0.92rem;
+}
+.cover-warn {
+  margin: 0;
+  max-width: 46ch;
+  padding: var(--s-2) var(--s-3);
+  border-left: 3px solid var(--oxblood);
+  background: rgba(140, 31, 36, 0.17);
+  color: #ffd9c9;
+}
+
+/* ── the room ─────────────────────────────────────────────────────── */
+
+.room { position: relative; min-height: 100dvh; }
+
+.scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* 0.72 s a revolution is ninety a minute, and a four-blade fan at ninety
+   passes a blade overhead six times a second. That six is the blade rate the
+   fan voice in audio.js is modulated at, so the picture and the sound are
+   turning the same fan rather than two of them. */
+.fan { animation: spin 0.72s var(--ease-constant) infinite; }
+.smoke { animation: drift 82s var(--ease-constant) infinite; transform-origin: 50% 50%; }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes drift {
+  0%   { transform: translate3d(-3%, 1%, 0) scale(1.02); }
+  50%  { transform: translate3d(5%, -2%, 0) scale(1.09); }
+  100% { transform: translate3d(-3%, 1%, 0) scale(1.02); }
+}
+
+/* Three columns, and the middle one is deliberately empty. The stage has to
+   stay visible between the card and the readout, otherwise "put me at the
+   front of the stage" is a choice about something you cannot see. */
+.stage {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(40px, 1fr) minmax(0, 318px);
+  align-items: start;
+  gap: var(--s-3);
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: clamp(4.4rem, 8vh, 6rem) clamp(1rem, 4vw, 3.4rem) var(--s-6);
+}
+
+/* Explicit placement, not auto-flow. Auto-placement puts the readout in row 2
+   because the caption line has already advanced the cursor, which drops the
+   whole right column below the fold on a 900 px tall window. */
+.card { grid-column: 1; grid-row: 1; }
+.floor-line { grid-column: 1; grid-row: 2; }
+/* The readouts are one grid item, so their height is their own and not the
+   card's. Placed as two rows they inherit the card's row height and the
+   second panel falls off the bottom of a short window. */
+.readouts {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  display: grid;
+  align-content: start;
+  gap: var(--s-3);
+}
+
+/* ── the table card: the hero object ──────────────────────────────── */
+
+/* Not a torn slip. This is stiff printed board with a die-cut corner, the
+   kind a room hands you at the door and takes back when you sit down, so it
+   has square edges and one bevel rather than a ragged outline. */
+.card {
+  position: relative;
+  padding: var(--s-4) clamp(1.1rem, 3.4vw, 2rem) var(--s-3);
+  color: var(--ink);
+  background:
+    radial-gradient(130% 70% at 88% 0%, rgba(255, 255, 255, 0.42), transparent 58%),
+    linear-gradient(168deg, var(--card), var(--card-2) 60%, var(--card-3));
+  transform: rotate(0.7deg);
+  filter: drop-shadow(0 22px 32px rgba(0, 0, 0, 0.6));
+  clip-path: polygon(0 0, calc(100% - 34px) 0, 100% 34px, 100% 100%, 0 100%);
+  transition: transform var(--t-slow) var(--ease-hand),
+              opacity var(--t-slow) var(--ease-out-expo);
+}
+/* Handed over the counter and away from you, not thrown. */
+.card.sending {
+  transform: translate3d(6vw, 34vh, 0) rotate(-7deg) scale(0.42);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* A printer setting this by hand would rule it twice: one thick, one thin. */
+.card-rule {
+  position: absolute;
+  inset: 15px 0 auto 0;
+  height: 8px;
+  background:
+    linear-gradient(180deg, var(--oxblood) 0 4px, transparent 4px 6px, var(--oxblood) 6px 8px);
+  opacity: 0.68;
+}
+.card-foot {
+  margin-top: var(--s-3);
+  height: 5px;
+  background:
+    linear-gradient(180deg, rgba(47, 28, 16, 0.44) 0 2px, transparent 2px 3px,
+                            rgba(47, 28, 16, 0.44) 3px 5px);
+}
+
+.card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--s-1);
+}
+.card-h {
+  margin: 0;
+  font-family: var(--font-press);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  color: var(--oxblood);
+}
+.card-sub {
+  margin: 0;
+  font-family: var(--font-press);
+  font-size: 0.68rem;
+  letter-spacing: 0.13em;
+  color: var(--ink-soft);
+}
+.card-hint {
+  margin: 0 0 var(--s-3);
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.row { margin-bottom: var(--s-3); }
+
+.q {
+  margin: 0 0 var(--s-1);
+  font-family: var(--font-press);
+  font-size: 0.7rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 4px 12px 4px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sharp);
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.97rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--t-fast) var(--ease-out-soft),
+              border-color var(--t-fast) var(--ease-out-soft),
+              transform var(--t-fast) var(--ease-out-expo);
+}
+/* A square box with a struck cross in it, because that is what you do to a
+   printed card with a pencil. A round radio would be from another century. */
+.chip::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid var(--ink-soft);
+  background: transparent;
+  transition: background-color var(--t-fast) var(--ease-out-soft),
+              box-shadow var(--t-fast) var(--ease-out-soft);
+}
+.chip:hover { background: rgba(47, 28, 16, 0.08); border-color: rgba(47, 28, 16, 0.22); }
+.chip:active { transform: scale(0.98); }
+.chip[aria-checked="true"] {
+  border-color: rgba(140, 31, 36, 0.5);
+  background: rgba(140, 31, 36, 0.1);
+}
+.chip[aria-checked="true"]::before {
+  background:
+    linear-gradient(45deg, transparent 44%, var(--oxblood) 44% 56%, transparent 56%),
+    linear-gradient(-45deg, transparent 44%, var(--oxblood) 44% 56%, transparent 56%);
+  border-color: var(--oxblood);
+}
+
+.send {
+  width: 100%;
+  min-height: 54px;
+  margin-top: var(--s-2);
+  border: 2px solid var(--oxblood);
+  border-radius: var(--r-sharp);
+  background: transparent;
+  color: var(--oxblood);
+  font-family: var(--font-press);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--t-mid) var(--ease-out-expo),
+              color var(--t-mid) var(--ease-out-expo),
+              transform var(--t-fast) var(--ease-out-expo);
+}
+.send:hover { background: var(--oxblood); color: var(--card); }
+.send:active { transform: scale(0.99); }
+.send[disabled] { opacity: 0.42; cursor: default; }
+
+/* ── captions and readouts ────────────────────────────────────────── */
+
+.floor-line {
+  margin: var(--s-3) 0 0;
+  min-height: 1.6em;
+  padding-left: var(--s-3);
+  border-left: 2px solid var(--street-dim);
+  color: var(--amber-hi);
+  font-size: 0.98rem;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.82);
+}
+.floor-line:empty { border-left-color: transparent; }
+
+.now, .legend {
+  padding: var(--s-3) var(--s-3) var(--s-4);
+  border: 1px solid rgba(207, 154, 65, 0.32);
+  border-radius: var(--r-soft);
+  background: linear-gradient(170deg, rgba(43, 23, 18, 0.9), rgba(13, 7, 4, 0.93));
+  backdrop-filter: blur(3px);
+  box-shadow: var(--lift);
+}
+
+.now-h, .legend-h {
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-press);
+  font-size: 0.7rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+.now-where {
+  margin: 0 0 var(--s-1);
+  font-family: var(--font-display);
+  font-size: clamp(1.02rem, 0.94rem + 0.32vw, 1.26rem);
+  line-height: 1.32;
+  color: var(--amber-hi);
+  text-wrap: pretty;
+}
+/* The medium line is the one piece of copy that explains the whole mechanic,
+   so it is set apart with the cold rule rather than run in with the rest. */
+.now-medium {
+  margin: 0 0 var(--s-2);
+  padding-left: var(--s-2);
+  border-left: 2px solid var(--street-dim);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--cream-dim);
+  text-wrap: pretty;
+}
+.now-tempo {
+  margin: 0 0 var(--s-3);
+  font-family: var(--font-press);
+  font-size: 0.72rem;
+  letter-spacing: 0.13em;
+  color: var(--cream-dim);
+}
+
+.meters { margin: 0 0 var(--s-3); padding: 0; list-style: none; }
+.meters li {
+  display: grid;
+  grid-template-columns: 1fr 62px;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(207, 154, 65, 0.13);
+  font-size: 0.82rem;
+  color: var(--cream);
+}
+/* The band is the reason you are in the room, so its row reads as the one
+   that is not part of the furniture. */
+.meters li:first-child { color: var(--amber-hi); }
+.meters li:first-child .bar span {
+  background: linear-gradient(90deg, var(--brass), #fff0cf);
+}
+.bar {
+  position: relative;
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 214, 150, 0.13);
+  overflow: hidden;
+}
+.bar span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 100%;
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--brass-dim), var(--amber-hi));
+  transition: transform var(--t-slow) var(--ease-out-expo);
+}
+
+.legend p { margin: 0 0 var(--s-2); font-size: 0.82rem; color: var(--cream-dim); }
+.legend p:last-child { margin-bottom: 0; }
+
+.again {
+  min-height: 48px;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--brass-dim);
+  border-radius: var(--r-sharp);
+  background: transparent;
+  color: var(--amber-hi);
+  font-family: var(--font-press);
+  font-size: 0.76rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color var(--t-fast) var(--ease-out-soft),
+              transform var(--t-fast) var(--ease-out-expo);
+}
+.again:hover { border-color: var(--brass); transform: translateY(-1px); }
+
+/* ── footer ───────────────────────────────────────────────────────── */
+
+.foot {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-3);
+  justify-content: space-between;
+  padding: var(--s-3) clamp(1rem, 4vw, 3.4rem) var(--s-4);
+  font-family: var(--font-press);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: var(--cream-dim);
+}
+.foot a { color: var(--brass); text-underline-offset: 4px; }
+.foot a:hover { color: var(--amber-hi); }
+
+/* ── narrow: the card stays the hero, the readouts stack under it ─── */
+
+@media (max-width: 940px) {
+  .stage { grid-template-columns: minmax(0, 1fr); }
+  .card, .floor-line, .readouts { grid-column: 1; grid-row: auto; }
+  .card { transform: rotate(0.4deg); }
+  /* Four answers on four lines makes the card taller than any phone. Two
+     columns halves it, which is what leaves room for the room. */
+  .chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+  .chip { min-height: 44px; padding: 4px 8px 4px 6px; }
+  .row { margin-bottom: var(--s-2); }
+}
+
+/* True portrait: the card starts below the fold line the stage sits above, so
+   a phone still shows you the band you are choosing a distance from. */
+@media (max-aspect-ratio: 3/4) {
+  .stage { padding-top: clamp(15rem, 32vh, 21rem); }
+  .card { transform: rotate(0.3deg); }
+}
+
+@media (max-width: 420px) {
+  .rail { inset: var(--s-2) var(--s-2) auto auto; }
+  .vol { width: 76px; }
+  .cover { padding-top: 6.6rem; }
+  .card { padding-left: 0.9rem; padding-right: 0.9rem; }
+  .chip { font-size: 0.92rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fan, .smoke { animation: none; }
+  .card, .card.sending, .bar span, .vol-fill,
+  .rail-btn, .begin, .chip, .send, .again {
+    transition-duration: 1ms;
+  }
+  .card.sending { transform: rotate(0.7deg) scale(0.98); }
+}

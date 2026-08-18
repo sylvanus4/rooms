@@ -11,6 +11,7 @@
  */
 
 const ROOMS = [
+  { id: 'neworleans-1927',year: '1927', name: '클럽',     blurb: '무대 앞인가 계단인가',  hue: 45,  ready: true  },
   { id: 'dabang-1979',    year: '1979', name: '다방',     blurb: 'DJ 박스와 신청곡 쪽지', hue: 28,  ready: true  },
   { id: 'arcade-1992',    year: '1992', name: '오락실',   blurb: '100원과 대전대',        hue: 285, ready: true  },
   { id: 'grandmas-summer',year: '1996', name: '할머니집', blurb: '마루와 매미',           hue: 95,  ready: true  },
