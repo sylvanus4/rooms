@@ -102,8 +102,8 @@ export const STRINGS = {
 
   /* --- Footer ---------------------------------------------------------- */
   footerNote: {
-    en: 'The room is synthesised in the browser. Only the record is a file, generated with MiniMax-Music3 on our own GPUs. No licensed commercial recordings, and every track is instrumental.',
-    ko: '방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다. 음악 레이어만 자체 GPU에서 MiniMax-Music3로 생성한 파일이며, 라이선스된 상업 녹음물은 한 곡도 쓰지 않았습니다. 모든 곡은 무보컬입니다.',
+    en: 'The room is synthesised in the browser. Only the record is a file, generated with MiniMax-Music3 on our own GPUs. No licensed commercial recordings. The second request is sung -- its vocal was separated out and re-sung in a licensed speaker timbre, with the original melody transplanted back. The other two pressings are instruments only.',
+    ko: '방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다. 음악 레이어만 자체 GPU에서 MiniMax-Music3로 생성한 파일이며, 라이선스된 상업 녹음물은 한 곡도 쓰지 않았습니다. 신청곡 2에는 노래가 있습니다 — 보컬을 분리해 라이선스를 가진 화자 음색으로 다시 부르게 한 뒤 원래 선율을 되이식했습니다. 나머지 둘은 연주 프레싱입니다.',
   },
   credit: { en: 'More pieces', ko: '다른 작업' },
 };

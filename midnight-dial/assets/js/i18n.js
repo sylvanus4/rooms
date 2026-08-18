@@ -70,8 +70,8 @@ export const STRINGS = {
 
   'foot.credit': { en: 'Built by Hyojung Han', ko: '한효정이 만들었습니다' },
   'foot.synth': {
-    en: 'The receiver and its room are generated live in the browser - no sample files, no recordings. Only the three music stations are files, generated on our own GPUs with MiniMax-Music3; no licensed commercial recording is used, and every track is instrumental.',
-    ko: '방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다 - 샘플 파일도, 녹음물도 없습니다. 음악 레이어만 자체 GPU에서 MiniMax-Music3로 생성한 파일이며, 라이선스된 상업 녹음물은 한 곡도 쓰지 않았습니다. 모든 곡은 무보컬입니다.',
+    en: 'The receiver and its room are generated live in the browser - no sample files, no recordings. Only the three music stations are files, generated on our own GPUs with MiniMax-Music3; no licensed commercial recording is used. The letter and the sign-off are sung -- their vocals were separated out and re-sung in a licensed speaker timbre, with the original melody transplanted back. The opening signal is instruments only.',
+    ko: '방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다 - 샘플 파일도, 녹음물도 없습니다. 음악 레이어만 자체 GPU에서 MiniMax-Music3로 생성한 파일이며, 라이선스된 상업 녹음물은 한 곡도 쓰지 않았습니다. 사연 BGM과 새벽 클로징에는 노래가 있습니다 — 보컬을 분리해 라이선스를 가진 화자 음색으로 다시 부르게 한 뒤 원래 선율을 되이식했습니다. 오프닝 시그널만 악기입니다.',
   },
 };
 

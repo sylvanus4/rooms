@@ -16,11 +16,11 @@ Six stations are hidden in the band between 88.0 and 108.0 MHz. None of them are
 
 The room's ambience is all synthesised live in the browser — no sample files, no recordings.
 Only the music layer is a file: three tracks generated on our own GPUs with MiniMax-Music3.
-No licensed commercial recording is used anywhere, and every track was commissioned with no vocal — instruments only.
+No licensed commercial recording is used anywhere. Two of the three stations are sung: their vocals were separated out, re-sung in a licensed speaker timbre, and given the original melody back. The opening signal is instruments only.
 
 방 안의 앰비언스는 전부 브라우저에서 실시간으로 합성됩니다 — 샘플 파일도, 녹음물도 없습니다.
 음악 레이어만 자체 GPU에서 MiniMax-Music3로 생성한 파일이며, 라이선스된 상업 녹음물은 한 곡도
-쓰지 않았습니다. 모든 곡은 보컬 없이 악기만으로 발주했습니다.
+쓰지 않았습니다. 세 방송 중 둘에는 노래가 있습니다 — 보컬을 분리해 라이선스를 가진 화자 음색으로 다시 부르게 한 뒤 원래 선율을 되이식했습니다. 오프닝 시그널만 악기입니다.
 
 The receiver, the static, the heterodyne whistle and six of the nine stations are synthesised
 at runtime with the Web Audio API: oscillators, noise written into `AudioBuffer`s, biquad
@@ -144,5 +144,5 @@ MIT, see [LICENSE](LICENSE).
 No copyrighted audio is used, included, or referenced in this project. There are no samples
 and no recordings of any kind: the receiver and six of the nine stations are generated from
 first principles at runtime, and the three tracks in `assets/audio/` were generated with
-MiniMax-Music3 on our own GPUs. Every track is instrumental, so the whole thing is yours to
+MiniMax-Music3 on our own GPUs. The signal is instrumental; the letter and the sign-off are sung. The whole thing is yours to
 fork.

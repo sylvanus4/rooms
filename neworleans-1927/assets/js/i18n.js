@@ -129,8 +129,8 @@ export const STRINGS = {
 
   /* --- Footer ----------------------------------------------------------- */
   footerNote: {
-    en: 'Every part of this room but the band is synthesised in the browser while you listen. The band is one file: a commissioned instrumental take, generated on our own GPUs with a licensed speaker timbre applied, and heard through a modelled listening position rather than out of a speaker.',
-    ko: '밴드를 뺀 방 전체는 듣는 동안 브라우저에서 합성됩니다. 밴드만 파일이며, 자체 GPU에서 만든 한 테이크입니다. 보컬은 분리해 라이선스를 가진 화자 음색으로 다시 부르게 한 뒤 원래 선율을 되이식했습니다. 스피커가 아니라 모델링된 청취 위치를 통해 들립니다.',
+    en: 'Every part of this room but the band is synthesised in the browser while you listen. The band is one file, generated with MiniMax-Music3 on our own GPUs; its vocal was separated out, re-sung in a licensed speaker timbre and given its original melody back. You hear it through a modelled listening position rather than out of a speaker.',
+    ko: '밴드를 뺀 방 전체는 듣는 동안 브라우저에서 합성됩니다. 밴드만 파일이며, 자체 GPU에서 MiniMax-Music3로 만든 한 테이크입니다. 보컬은 분리해 라이선스를 가진 화자 음색으로 다시 부르게 한 뒤 원래 선율을 되이식했습니다. 스피커가 아니라 모델링된 청취 위치를 통해 들립니다.',
   },
   credit: { en: 'More pieces', ko: '다른 작업' },
 };
