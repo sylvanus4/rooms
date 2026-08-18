@@ -1,8 +1,11 @@
+/* 네이티브 UI(볼륨 슬라이더·스크롤바)를 다크로 렌더한다. 이게 없으면 어두운 방에
+   밝은 컨트롤이 박힌다 — 2026-08-18 모바일 감사 실측. */
 /* neworleans-1927 - lamp black, oxblood, brass, and one cold blue coming down
    the stairs from the street. One committed look, and no theme toggle: the
    room has one set of lights in it and they are all on fire except one. */
 
 :root {
+  color-scheme: dark;
   /* Surfaces. A basement room with a pressed-tin ceiling and no daylight. */
   --page:      #120a08;
   --room-back: #2b1712;

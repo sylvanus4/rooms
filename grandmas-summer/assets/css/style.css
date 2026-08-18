@@ -1,3 +1,5 @@
+/* 네이티브 UI(볼륨 슬라이더·스크롤바)를 다크로 렌더한다. 이게 없으면 어두운 방에
+   밝은 컨트롤이 박힌다 — 2026-08-18 모바일 감사 실측. */
 /* =============================================================================
    Grandma's Summer - sun-bleached, one deliberate look, no theme toggle.
    Every colour that changes with the time of day is a custom property written
@@ -5,6 +7,7 @@
    ========================================================================== */
 
 :root {
+  color-scheme: dark;
   /* ---- typography: old-style serif for voice, tabular mono for data ------ */
   --font-display: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino,
                   "Apple SD Gothic Neo", "Malgun Gothic", Georgia, serif;

@@ -38,6 +38,11 @@ html, body {
 body {
   display: grid;
   grid-template-rows: auto 1fr auto;
+  /* ⛔ 열을 명시하지 않으면 암시 열이 max-content 로 잡힌다. 탭 스트립은 자기 안에서
+     스크롤되지만 max-content 는 여전히 탭 전체 폭이라, 문이 일곱이 되자 390px 폰에서
+     열이 454px 이 되어 페이지 전체가 옆으로 밀렸다(2026-08-18 실측). 여섯일 때는 우연히
+     들어갔을 뿐이다. minmax(0,1fr) 이 열을 뷰포트에 묶고 자식이 줄어들 수 있게 한다. */
+  grid-template-columns: minmax(0, 1fr);
   background: var(--ink-deep);
   color: var(--paper);
   font-family: system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;

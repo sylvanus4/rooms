@@ -1,3 +1,5 @@
+/* 네이티브 UI(볼륨 슬라이더·스크롤바)를 다크로 렌더한다. 이게 없으면 어두운 방에
+   밝은 컨트롤이 박힌다 — 2026-08-18 모바일 감사 실측. */
 /* ═══════════════════════════════════════════════════════════════════════
    PC Bang 2004
    Committed dark, amber phosphor, one hot signal colour. The whole viewport
@@ -8,6 +10,7 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 :root {
+  color-scheme: dark;
   /* surfaces, coolest to warmest */
   --ink-0: #050608;          /* the room behind the monitor */
   --ink-1: #0a0c10;          /* screen base */
