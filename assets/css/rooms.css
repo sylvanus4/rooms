@@ -51,6 +51,14 @@ body {
   transition: background-color var(--duration-normal) var(--ease-out-expo);
 }
 
+/* body carries tabindex="-1" and gets focused once on load (rooms.js) purely to
+   establish a real starting point for sequential keyboard navigation — without it
+   Chromium's first Tab from a never-focused document jumps straight into the room
+   iframe and skips the door strip entirely. It is never a visible focus target. */
+body:focus {
+  outline: none;
+}
+
 /* ---------- hallway header ---------- */
 
 .hall {

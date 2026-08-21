@@ -127,3 +127,11 @@ build();
 const initial = location.hash.slice(1);
 const fallback = (ROOMS.find((r) => r.ready) || ROOMS[0]).id;
 mount(ROOMS.some((r) => r.id === initial) ? initial : fallback);
+
+// A page nobody has clicked into yet has no real focus target, and Chromium's
+// first sequential Tab from that state jumps straight into the room iframe —
+// the door strip (mounted earlier in the DOM, with a valid roving tabindex)
+// gets skipped entirely. Body carries tabindex="-1" in the markup for exactly
+// this: focusing it once establishes a real starting point, so the next Tab
+// walks the document in order and lands on the selected door.
+document.body.focus({ preventScroll: true });
